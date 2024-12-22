@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <PropertyGroup Label="General Configuration">
+    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup Label="API">
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
