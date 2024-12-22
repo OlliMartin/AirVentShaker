@@ -46,6 +46,7 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
 
         try
         {
+            Status = ServiceStatus.Stopping;
             await CancellationTokenSource.CancelAsync();
 
             await Task.WhenAny(
@@ -62,6 +63,7 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
         finally
         {
             CancellationTokenSource.Dispose();
+            Status = ServiceStatus.Stopped;
         }
     }
 

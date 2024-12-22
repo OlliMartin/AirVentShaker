@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.Abstractions.Model;
 using Oma.WndwCtrl.MgmtApi.Model;
 using ServiceDescriptor = Oma.WndwCtrl.MgmtApi.Model.Api.ServiceDescriptor;
 
@@ -62,7 +63,7 @@ public class ServicesController : ControllerBase
             return Problem("Could not locate service to start", statusCode: 404);
         }
 
-        await service.RunAsync(cancelToken: HttpContext.RequestAborted);
+        _ = service.RunAsync(cancelToken: CancellationToken.None);
 
         return Ok();
     }
@@ -78,6 +79,11 @@ public class ServicesController : ControllerBase
         if (service is null)
         {
             return Problem("Could not locate service to stop", statusCode: 404);
+        }
+
+        if (service.Status is not ServiceStatus.Running)
+        {
+            return Problem($"Service {service.Name} is not running", statusCode: 400);
         }
 
         await service.StopAsync(cancelToken: HttpContext.RequestAborted);
