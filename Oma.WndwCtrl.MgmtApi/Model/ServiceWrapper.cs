@@ -1,23 +1,8 @@
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.Abstractions.Model;
 
 namespace Oma.WndwCtrl.MgmtApi.Model;
 
-public interface IServiceWrapper
-{    
-    string Name { get; }
-    
-    Guid ServiceGuid { get; }
-    
-    DateTime? StartedAt { get; }
-    
-    ServiceStatus Status { get; }
-}
-
-public interface IServiceWrapper<out TService> : IService, IServiceWrapper
-    where TService : class, IService
-{
-    string IServiceWrapper.Name => typeof(TService).Name;
-}
 
 public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TService>
     where TService : class, IService
@@ -28,7 +13,7 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
         ServiceGuid = Guid.NewGuid();
     }
 
-    private TService Service { get; }
+    public TService Service { get; }
 
     public Guid ServiceGuid { get; }
     public DateTime? StartedAt { get; private set; }
@@ -38,25 +23,52 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     
     private Task? ServiceTask { get; set; }
     
-    public void Dispose()
-    {
-        CancellationTokenSource.Dispose();
-    }
-
     public Task RunAsync(CancellationToken cancelToken = default)
     {
-        CancellationTokenSource = new();
-        using CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancelToken, CancellationTokenSource.Token);
+        CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancelToken);
         
         Status = ServiceStatus.Starting;
         
-        ServiceTask = Service.RunAsync(linkedTokenSource.Token);
+        ServiceTask = Service.RunAsync(CancellationTokenSource.Token);
         
         StartedAt = DateTime.UtcNow;
         Status = ServiceStatus.Running;
         
         return ServiceTask;
     }
+    
+    public async Task StopAsync(CancellationToken cancelToken = default)
+    {
+        TimeSpan stopTimeout = TimeSpan.FromSeconds(5);
+        
+        CancellationTokenSource ctsForceCancelAfter = CancellationTokenSource.CreateLinkedTokenSource(cancelToken);
+        ctsForceCancelAfter.CancelAfter(stopTimeout);
+
+        try
+        {
+            await CancellationTokenSource.CancelAsync();
+
+            await Task.WhenAny(
+                ServiceTask ?? Task.CompletedTask,
+                Task.Delay(stopTimeout, ctsForceCancelAfter.Token)
+            );
+            
+            ctsForceCancelAfter.Token.ThrowIfCancellationRequested();
+        }
+        catch (OperationCanceledException)
+        {
+            await ForceStopAsync(cancelToken);
+        }
+        finally
+        {
+            CancellationTokenSource.Dispose();
+        }
+    }
 
     public Task ForceStopAsync(CancellationToken cancelToken = default) => Service.ForceStopAsync(cancelToken);
+    
+    public void Dispose()
+    {
+        CancellationTokenSource.Dispose();
+    }
 }

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Oma.WndwCtrl.MgmtApi.Model;
+namespace Oma.WndwCtrl.Abstractions.Model;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ServiceStatus

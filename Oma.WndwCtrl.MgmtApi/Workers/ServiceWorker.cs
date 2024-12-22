@@ -16,7 +16,7 @@ public class ServiceWorker : IHostedService
     {
         foreach (var service in _serviceState.All)
         {
-            service.RunAsync(cancellationToken);
+            _ = service.RunAsync(cancellationToken);
         }
         
         return Task.CompletedTask;

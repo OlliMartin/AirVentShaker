@@ -27,4 +27,8 @@ app.MapControllers();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
+#if DEBUG
+    app.UseDeveloperExceptionPage();
+#endif
+
 app.Run();
