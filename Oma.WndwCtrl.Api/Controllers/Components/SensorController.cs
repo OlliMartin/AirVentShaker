@@ -3,14 +3,13 @@ using Oma.WndwCtrl.Core.Model;
 
 namespace Oma.WndwCtrl.Api.Controllers.Components;
 
-[ApiController]
-[Route("components/{componentName}")]
-public class SensorController : ControllerBase
+public class SensorController : ComponentControllerBase<Sensor>
 {
     [HttpGet]
     [EndpointSummary("Query Sensor")]
     public async Task<IActionResult> QueryAsync()
     {
-        return this.Ok("something hits the controller.");
+        await Task.Delay(0);
+        return Ok(Component.QueryCommand);
     }
 }

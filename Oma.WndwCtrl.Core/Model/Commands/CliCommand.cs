@@ -9,4 +9,6 @@ public class CliCommand : BaseCommand
     public string? WorkingDirectory { get; set; }
 
     public string? Arguments { get; set; }
+    
+    public override string ToString() => $"CLI: {FileName} {Arguments}";
 }
