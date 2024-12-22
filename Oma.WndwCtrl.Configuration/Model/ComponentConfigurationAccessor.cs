@@ -9,7 +9,7 @@ public class ComponentConfigurationAccessor
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
     
-    public ComponentConfiguration? Configuration { get; set; } = new();
+    public ComponentConfiguration Configuration { get; set; } = new();
     
     public async static Task<ComponentConfigurationAccessor> FromFileAsync(CancellationToken cancelToken = default)
     {

@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.Api.Conventions;
 using Oma.WndwCtrl.Configuration.Model;
 using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.CoreAsp.Conventions;
@@ -15,6 +17,12 @@ public class CtrlApiService : WebApplicationWrapper<CtrlApiService>, IApiService
     {
         _logger = logger;
         _configurationAccessor = configurationAccessor;
+    }
+
+    protected override MvcOptions PreConfigureMvcOptions(MvcOptions options)
+    {
+        options.Conventions.Add(new ComponentApplicationConvention(_configurationAccessor));
+        return base.PreConfigureMvcOptions(options);
     }
 
     protected override IServiceCollection ConfigureServices(IServiceCollection services) => base
