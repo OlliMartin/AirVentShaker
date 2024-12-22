@@ -14,5 +14,9 @@
     <ItemGroup>
       <Content Remove="ctrl-api.json" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Actions\" />
+    </ItemGroup>
 
 </Project>
