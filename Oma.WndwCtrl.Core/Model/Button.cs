@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Oma.WndwCtrl.Core.Model.Commands;
 namespace Oma.WndwCtrl.Core.Model;
 
 /// <summary>
@@ -5,5 +7,7 @@ namespace Oma.WndwCtrl.Core.Model;
 /// </summary>
 public class Button
 {
-    
+    [JsonInclude]
+    [JsonRequired]
+    public BaseCommand Command { get; internal set; } = null!;
 }
