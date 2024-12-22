@@ -53,8 +53,10 @@ public class ServicesController : ControllerBase
     [HttpPost("{serviceName}/start")]
     public Task<IActionResult> StartByNameAsync([FromRoute] string serviceName) => StartAsync(sw => sw.Name == serviceName);
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> StartAsync(Func<IServiceWrapper, bool> predicate)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         IServiceWrapper? service = _serviceState.All.FirstOrDefault(predicate);
 
@@ -62,8 +64,7 @@ public class ServicesController : ControllerBase
         {
             return Problem("Could not locate service to start", statusCode: 404);
         }
-
-        // TODO: See if it is feasible to wait for start here, running the WaitForCancellation only async/detached
+        
         _ = service.RunAsync(cancelToken: CancellationToken.None);
 
         return Ok();

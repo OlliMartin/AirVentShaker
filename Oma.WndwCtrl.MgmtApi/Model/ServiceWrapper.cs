@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Model;
 
@@ -19,7 +20,7 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     public DateTime? StartedAt { get; private set; }
     public ServiceStatus Status { get; private set; }
 
-    private CancellationTokenSource CancellationTokenSource { get; set; }
+    private CancellationTokenSource? CancellationTokenSource { get; set; }
     
     private Task? ServiceTask { get; set; }
     
@@ -39,6 +40,11 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     
     public async Task StopAsync(CancellationToken cancelToken = default)
     {
+        if (!IsRunning())
+        {
+            return;
+        }
+        
         TimeSpan stopTimeout = TimeSpan.FromSeconds(5);
         
         CancellationTokenSource ctsForceCancelAfter = CancellationTokenSource.CreateLinkedTokenSource(cancelToken);
@@ -64,13 +70,20 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
         {
             CancellationTokenSource.Dispose();
             Status = ServiceStatus.Stopped;
+
+            CancellationTokenSource = null;
         }
     }
 
     public Task ForceStopAsync(CancellationToken cancelToken = default) => Service.ForceStopAsync(cancelToken);
+
+    [MemberNotNullWhen(true, nameof(CancellationTokenSource))]
+    private bool IsRunning()
+        => Status == ServiceStatus.Running && CancellationTokenSource is not null;
     
     public void Dispose()
     {
-        CancellationTokenSource.Dispose();
+        CancellationTokenSource?.Dispose();
+        CancellationTokenSource = null;
     }
 }
