@@ -6,7 +6,7 @@ ILoggerFactory loggerFactory = LoggerFactory.Create(builder => { });
 
 IApiService apiService = new CtrlApiService(
     loggerFactory.CreateLogger<CtrlApiService>(),
-    ComponentConfigurationAccessor.FromFile()
+    await ComponentConfigurationAccessor.FromFileAsync()
 );
 
 await apiService.StartAsync(CancellationToken.None);
