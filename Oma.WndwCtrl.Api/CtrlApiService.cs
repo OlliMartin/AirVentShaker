@@ -1,4 +1,5 @@
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.CoreAsp.Conventions;
 using Scalar.AspNetCore;
 
 namespace Oma.WndwCtrl.Api;
@@ -18,7 +19,10 @@ public class CtrlApiService : IApiService
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
         IMvcCoreBuilder mvcBuilder = builder.Services
-            .AddMvcCore()
+            .AddMvcCore(opts =>
+            {
+                opts.Conventions.Add(new ContainingAssemblyApplicationModelConvention<CtrlApiService>());
+            })
             .AddApiExplorer();
         
         builder.Services.AddOpenApi();

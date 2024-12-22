@@ -15,6 +15,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Oma.WndwCtrl.Abstractions\Oma.WndwCtrl.Abstractions.csproj" />
       <ProjectReference Include="..\Oma.WndwCtrl.Api\Oma.WndwCtrl.Api.csproj" />
+      <ProjectReference Include="..\Oma.WndwCtrl.CoreAsp\Oma.WndwCtrl.CoreAsp.csproj" />
     </ItemGroup>
     
     <ItemGroup>

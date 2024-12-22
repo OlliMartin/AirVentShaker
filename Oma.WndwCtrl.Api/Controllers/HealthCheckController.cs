@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Oma.WndwCtrl.Api.Controllers;
 
+[ApiController]
 [Route("ctrl/[controller]")]
 public class HealthCheckController : ControllerBase
 {

@@ -63,6 +63,7 @@ public class ServicesController : ControllerBase
             return Problem("Could not locate service to start", statusCode: 404);
         }
 
+        // TODO: See if it is feasible to wait for start here, running the WaitForCancellation only async/detached
         _ = service.RunAsync(cancelToken: CancellationToken.None);
 
         return Ok();

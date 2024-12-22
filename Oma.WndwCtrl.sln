@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtrl.MgmtApi", "Oma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtrl.Abstractions", "Oma.WndwCtrl.Abstractions\Oma.WndwCtrl.Abstractions.csproj", "{8AD6ADE3-537D-448D-B01C-C711AEA4E46F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtrl.CoreAsp", "Oma.WndwCtrl.CoreAsp\Oma.WndwCtrl.CoreAsp.csproj", "{D6F7CFD5-0DA3-4BF6-BD10-AD093605AFAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{8AD6ADE3-537D-448D-B01C-C711AEA4E46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AD6ADE3-537D-448D-B01C-C711AEA4E46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AD6ADE3-537D-448D-B01C-C711AEA4E46F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F7CFD5-0DA3-4BF6-BD10-AD093605AFAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F7CFD5-0DA3-4BF6-BD10-AD093605AFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F7CFD5-0DA3-4BF6-BD10-AD093605AFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F7CFD5-0DA3-4BF6-BD10-AD093605AFAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
