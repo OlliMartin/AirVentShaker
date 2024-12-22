@@ -1,6 +1,0 @@
-@Oma.WndwCtrl.Api_HostAddress = http://localhost:5109
-
-GET {{Oma.WndwCtrl.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
