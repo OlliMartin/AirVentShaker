@@ -9,7 +9,7 @@ public class WebApplicationWrapper<TAssemblyDescriptor>
 {
     protected WebApplication? Application { get; private set; }
     
-    public Task RunAsync(CancellationToken cancelToken = default)
+    public async Task StartAsync(CancellationToken cancelToken = default)
     {
         if (Application is not null)
         {
@@ -47,7 +47,7 @@ public class WebApplicationWrapper<TAssemblyDescriptor>
         Application.UseDeveloperExceptionPage();
 #endif
         
-        return PreAppRun(Application).RunAsync(cancelToken);
+        await PreAppRun(Application).StartAsync(cancelToken);
     }
 
     protected virtual IConfigurationBuilder ConfigurationConfiguration(IConfigurationBuilder configurationBuilder) =>
@@ -60,4 +60,20 @@ public class WebApplicationWrapper<TAssemblyDescriptor>
     
     protected virtual WebApplication PostAppBuild(WebApplication app) => app;
     protected virtual WebApplication PreAppRun(WebApplication app) => app;
+
+    public async Task WaitForShutdownAsync(CancellationToken cancelToken = default)
+    {
+        if (Application is not null)
+        {
+            try
+            {
+                await Application.WaitForShutdownAsync(cancelToken);
+            }
+            finally
+            {
+                await Application.DisposeAsync();
+                Application = null;
+            }
+        }
+    }
 }

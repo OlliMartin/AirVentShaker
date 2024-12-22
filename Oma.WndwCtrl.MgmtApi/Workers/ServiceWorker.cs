@@ -12,14 +12,12 @@ public class ServiceWorker : IHostedService
         _serviceState = serviceState;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         foreach (var service in _serviceState.All)
         {
-            _ = service.RunAsync(cancellationToken);
+            _ = service.StartAsync(cancellationToken);
         }
-        
-        return Task.CompletedTask;
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

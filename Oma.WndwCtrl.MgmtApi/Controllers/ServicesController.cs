@@ -65,7 +65,7 @@ public class ServicesController : ControllerBase
             return Problem("Could not locate service to start", statusCode: 404);
         }
         
-        _ = service.RunAsync(cancelToken: CancellationToken.None);
+        await service.StartAsync(cancelToken: CancellationToken.None);
 
         return Ok();
     }

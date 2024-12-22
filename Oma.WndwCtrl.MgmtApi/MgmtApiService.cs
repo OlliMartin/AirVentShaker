@@ -1,5 +1,6 @@
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Api;
+using Oma.WndwCtrl.Api.Extensions;
 using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.MgmtApi.Model;
 using Oma.WndwCtrl.MgmtApi.Workers;
@@ -17,6 +18,6 @@ public class MgmtApiService : WebApplicationWrapper<MgmtApiService>
     protected override IServiceCollection ConfigureServices(IServiceCollection services) =>
         base.ConfigureServices(services)
             .AddSingleton<ServiceState>()
-            .AddSingleton<IApiService, CtrlApiService>()
+            .AddComponentApi()
             .AddHostedService<ServiceWorker>();
 }
