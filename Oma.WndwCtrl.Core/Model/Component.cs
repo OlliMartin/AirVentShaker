@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 namespace Oma.WndwCtrl.Core.Model;
 
-[JsonPolymorphic()]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(Button), typeDiscriminator: "button")]
 [JsonDerivedType(typeof(Sensor), typeDiscriminator: "sensor")]
 [JsonDerivedType(typeof(Switch), typeDiscriminator: "switch")]

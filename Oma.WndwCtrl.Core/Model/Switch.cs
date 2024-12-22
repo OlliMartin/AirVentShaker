@@ -9,7 +9,7 @@ namespace Oma.WndwCtrl.Core.Model;
 /// Can define a GET endpoint to query the _current_ state (ad-hoc execution)
 /// Additionally, a POST:/on and POST:/off endpoint is hosted (potentially flip as well)
 /// </summary>
-public class Switch : IStateQueryable
+public class Switch : Component, IStateQueryable
 {
     [JsonInclude]
     [JsonRequired]

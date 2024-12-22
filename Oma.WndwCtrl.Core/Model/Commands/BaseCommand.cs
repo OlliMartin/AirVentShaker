@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 namespace Oma.WndwCtrl.Core.Model.Commands;
 
-[JsonPolymorphic]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(CliCommand), typeDiscriminator: "cli")]
 public class BaseCommand
 {

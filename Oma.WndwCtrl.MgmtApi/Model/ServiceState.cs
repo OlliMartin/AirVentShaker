@@ -8,12 +8,13 @@ public class ServiceState
     public IReadOnlyList<IServiceWrapper<IApiService>> ApiServices { get; init; }
     
     public ServiceState(
+        ILoggerFactory loggerFactory,
         IEnumerable<IApiService> apiServices,
         IEnumerable<IBackgroundService> backgroundServices
     )
     {
-        BackgroundServices = backgroundServices.Select(svc => new ServiceWrapper<IBackgroundService>(svc)).ToList().AsReadOnly();
-        ApiServices = apiServices.Select(svc => new ServiceWrapper<IApiService>(svc)).ToList().AsReadOnly();
+        BackgroundServices = backgroundServices.Select(svc => new ServiceWrapper<IBackgroundService>(svc, loggerFactory.CreateLogger<ServiceWrapper<IBackgroundService>>())).ToList().AsReadOnly();
+        ApiServices = apiServices.Select(svc => new ServiceWrapper<IApiService>(svc, loggerFactory.CreateLogger<ServiceWrapper<IApiService>>())).ToList().AsReadOnly();
     }
     
     public IEnumerable<IServiceWrapper<IService>> All => BackgroundServices

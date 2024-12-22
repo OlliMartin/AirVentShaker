@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Oma.WndwCtrl.Abstractions\Oma.WndwCtrl.Abstractions.csproj" />
+      <ProjectReference Include="..\Oma.WndwCtrl.Core\Oma.WndwCtrl.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

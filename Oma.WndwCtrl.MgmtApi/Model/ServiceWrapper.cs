@@ -8,8 +8,11 @@ namespace Oma.WndwCtrl.MgmtApi.Model;
 public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TService>
     where TService : class, IService
 {
-    public ServiceWrapper(TService service)
+    private readonly ILogger<ServiceWrapper<TService>> _logger;
+
+    public ServiceWrapper(TService service, ILogger<ServiceWrapper<TService>> logger)
     {
+        _logger = logger;
         Service = service;
         ServiceGuid = Guid.NewGuid();
     }
@@ -43,7 +46,9 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
             {
                 if (t.IsFaulted)
                 {
-                    // TODO: Log something
+                    _logger.LogError(t.Exception, "Could not start service.");
+                    
+                    Status = ServiceStatus.Crashed;
                     return;
                 }
 
