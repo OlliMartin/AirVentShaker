@@ -1,10 +1,5 @@
-﻿using Oma.WndwCtrl.Abstractions;
-using Oma.WndwCtrl.Api;
-using Oma.WndwCtrl.CoreAsp.Conventions;
-using Oma.WndwCtrl.MgmtApi;
-using Oma.WndwCtrl.MgmtApi.Model;
-using Oma.WndwCtrl.MgmtApi.Workers;
-using Scalar.AspNetCore;
+﻿using Oma.WndwCtrl.MgmtApi;
 
 MgmtApiService apiService = new();
-await apiService.RunAsync();
+await apiService.StartAsync();
+await apiService.WaitForShutdownAsync();

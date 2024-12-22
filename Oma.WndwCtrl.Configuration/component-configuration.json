@@ -1,0 +1,20 @@
+{
+  "components": {
+    "ping-xkcd": {
+      "type": "sensor",
+      "queryCommand": {
+        "type": "cli",
+        "fileName": "cmd",
+        "arguments": "ping xkcd.com"
+      }
+    },
+    "ping-google": {
+      "type": "sensor",
+      "queryCommand": {
+        "type": "cli",
+        "fileName": "cmd",
+        "arguments": "ping google.com"
+      }
+    }
+  }
+}

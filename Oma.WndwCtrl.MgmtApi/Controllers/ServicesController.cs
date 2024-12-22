@@ -51,6 +51,7 @@ public class ServicesController : ControllerBase
     
         
     [HttpPost("{serviceName}/start")]
+    [EndpointSummary("Start Service by Name")]
     public Task<IActionResult> StartByNameAsync([FromRoute] string serviceName) => StartAsync(sw => sw.Name == serviceName);
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -65,12 +66,13 @@ public class ServicesController : ControllerBase
             return Problem("Could not locate service to start", statusCode: 404);
         }
         
-        _ = service.RunAsync(cancelToken: CancellationToken.None);
+        await service.StartAsync(cancelToken: CancellationToken.None);
 
         return Ok();
     }
     
     [HttpPost("{serviceName}/stop")]
+    [EndpointSummary("Stop Service by Name")]
     public Task<IActionResult> StopByNameAsync([FromRoute] string serviceName) => StopAsync(sw => sw.Name == serviceName);
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -89,6 +91,25 @@ public class ServicesController : ControllerBase
         }
 
         await service.StopAsync(cancelToken: HttpContext.RequestAborted);
+
+        return Ok();
+    }
+
+    [HttpPost("restart")]
+    [EndpointSummary("Restart all services")]
+    public async Task<IActionResult> RestartAllAsync()
+    {
+        List<IServiceWrapper<IService>> all = _serviceState.All.ToList();
+
+        foreach (var service in all)
+        {
+            await service.StopAsync();
+        }
+        
+        foreach (var service in all)
+        {
+            await service.StartAsync();
+        }
 
         return Ok();
     }

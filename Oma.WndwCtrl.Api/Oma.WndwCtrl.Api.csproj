@@ -7,12 +7,17 @@
     </PropertyGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\Oma.WndwCtrl.Configuration\Oma.WndwCtrl.Configuration.csproj" />
       <ProjectReference Include="..\Oma.WndwCtrl.CoreAsp\Oma.WndwCtrl.CoreAsp.csproj" />
       <ProjectReference Include="..\Oma.WndwCtrl.Core\Oma.WndwCtrl.Core.csproj" />
     </ItemGroup>
     
     <ItemGroup>
       <Content Remove="ctrl-api.json" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Actions\" />
     </ItemGroup>
 
 </Project>

@@ -8,8 +8,11 @@ namespace Oma.WndwCtrl.MgmtApi.Model;
 public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TService>
     where TService : class, IService
 {
-    public ServiceWrapper(TService service)
+    private readonly ILogger<ServiceWrapper<TService>> _logger;
+
+    public ServiceWrapper(TService service, ILogger<ServiceWrapper<TService>> logger)
     {
+        _logger = logger;
         Service = service;
         ServiceGuid = Guid.NewGuid();
     }
@@ -22,25 +25,42 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
 
     private CancellationTokenSource? CancellationTokenSource { get; set; }
     
-    private Task? ServiceTask { get; set; }
+    private Task? StartTask { get; set; }
+    private Task? CompletionTask { get; set; }
     
-    public Task RunAsync(CancellationToken cancelToken = default)
+    public Task StartAsync(CancellationToken cancelToken = default)
     {
         if (IsRunning())
         {
-            return ServiceTask;
+            return StartTask;
         }
         
         CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancelToken);
         
         Status = ServiceStatus.Starting;
         
-        ServiceTask = Service.RunAsync(CancellationTokenSource.Token);
+        StartTask = Service.StartAsync(CancellationTokenSource.Token);
+
+        StartTask
+            .ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    _logger.LogError(t.Exception, "Could not start service.");
+                    
+                    Status = ServiceStatus.Crashed;
+                    return;
+                }
+
+                StartedAt = DateTime.UtcNow;
+                Status = ServiceStatus.Running;
+
+                CompletionTask = Service.WaitForShutdownAsync(CancellationTokenSource.Token);
+            },
+            cancelToken)
+            .ConfigureAwait(false);
         
-        StartedAt = DateTime.UtcNow;
-        Status = ServiceStatus.Running;
-        
-        return ServiceTask;
+        return StartTask;
     }
     
     public async Task StopAsync(CancellationToken cancelToken = default)
@@ -61,7 +81,7 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
             await CancellationTokenSource.CancelAsync();
 
             await Task.WhenAny(
-                ServiceTask ?? Task.CompletedTask,
+                CompletionTask ?? Task.CompletedTask,
                 Task.Delay(stopTimeout, ctsForceCancelAfter.Token)
             );
             
@@ -77,15 +97,20 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
             Status = ServiceStatus.Stopped;
 
             CancellationTokenSource = null;
+            CompletionTask = null;
         }
     }
+    
+    public Task WaitForShutdownAsync(CancellationToken cancelToken = default)
+        => Service?.WaitForShutdownAsync(cancelToken) ?? Task.CompletedTask;
 
     public Task ForceStopAsync(CancellationToken cancelToken = default) => Service.ForceStopAsync(cancelToken);
 
     [MemberNotNullWhen(true, nameof(CancellationTokenSource))]
-    [MemberNotNullWhen(true, nameof(ServiceTask))]
+    [MemberNotNullWhen(true, nameof(StartTask))]
+    [MemberNotNullWhen(true, nameof(CompletionTask))]
     private bool IsRunning()
-        => Status == ServiceStatus.Running && CancellationTokenSource is not null && ServiceTask is not null;
+        => Status == ServiceStatus.Running && CancellationTokenSource is not null && StartTask is not null && CompletionTask is not null;
     
     public void Dispose()
     {
