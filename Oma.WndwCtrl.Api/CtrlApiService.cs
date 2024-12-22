@@ -1,54 +1,27 @@
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.CoreAsp.Conventions;
 using Scalar.AspNetCore;
 
 namespace Oma.WndwCtrl.Api;
 
-public class CtrlApiService : IApiService
+public class CtrlApiService : WebApplicationWrapper<CtrlApiService>, IApiService
 {
     private readonly ILogger _logger;
-    private WebApplication? _app;
 
     public CtrlApiService(ILogger<CtrlApiService> logger)
     {
         _logger = logger;
     }
     
-    public Task RunAsync(CancellationToken cancelToken = default)
-    {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-
-        IMvcCoreBuilder mvcBuilder = builder.Services
-            .AddMvcCore(opts =>
-            {
-                opts.Conventions.Add(new ContainingAssemblyApplicationModelConvention<CtrlApiService>());
-            })
-            .AddApiExplorer();
-        
-        builder.Services.AddOpenApi();
-        
-        _app = builder.Build();
-        
-        _app.MapControllers();
-        
-        _app.MapOpenApi();
-        _app.MapScalarApiReference();
-        
-#if DEBUG
-        _app.UseDeveloperExceptionPage();
-#endif
-        
-        return _app.RunAsync(cancelToken);
-    }
-
     public Task ForceStopAsync(CancellationToken cancelToken)
     {
-        if (_app is null)
+        if (Application is null)
         {
             _logger.LogWarning("Force stop called without app running.");
             return Task.CompletedTask;
         }
 
-        return _app.StopAsync(cancelToken);
+        return Application.StopAsync(cancelToken);
     }
 }

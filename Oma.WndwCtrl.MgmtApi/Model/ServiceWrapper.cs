@@ -26,6 +26,11 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     
     public Task RunAsync(CancellationToken cancelToken = default)
     {
+        if (IsRunning())
+        {
+            return ServiceTask;
+        }
+        
         CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancelToken);
         
         Status = ServiceStatus.Starting;
@@ -78,8 +83,9 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     public Task ForceStopAsync(CancellationToken cancelToken = default) => Service.ForceStopAsync(cancelToken);
 
     [MemberNotNullWhen(true, nameof(CancellationTokenSource))]
+    [MemberNotNullWhen(true, nameof(ServiceTask))]
     private bool IsRunning()
-        => Status == ServiceStatus.Running && CancellationTokenSource is not null;
+        => Status == ServiceStatus.Running && CancellationTokenSource is not null && ServiceTask is not null;
     
     public void Dispose()
     {
