@@ -11,7 +11,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\Oma.WndwCtl.Core\Oma.WndwCtl.Core.csproj" />
+      <ProjectReference Include="..\Oma.WndwCtrl.Core\Oma.WndwCtrl.Core.csproj" />
     </ItemGroup>
 
 </Project>

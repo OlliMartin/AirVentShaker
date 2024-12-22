@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtl.Core", "Oma.WndwCtl.Core\Oma.WndwCtl.Core.csproj", "{C9725629-7738-4073-A1D3-FF05A946EE60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtrl.Core", "Oma.WndwCtrl.Core\Oma.WndwCtrl.Core.csproj", "{C9725629-7738-4073-A1D3-FF05A946EE60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.WndwCtrl.Api", "Oma.WndwCtrl.Api\Oma.WndwCtrl.Api.csproj", "{346E400B-B76B-4594-87E3-D295161ECD34}"
 EndProject
