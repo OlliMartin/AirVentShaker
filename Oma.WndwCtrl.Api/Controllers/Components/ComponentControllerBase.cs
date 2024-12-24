@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Oma.WndwCtrl.Core.FlowExecutors;
 using Oma.WndwCtrl.Core.Model;
 
 namespace Oma.WndwCtrl.Api.Controllers.Components;
@@ -8,6 +9,8 @@ namespace Oma.WndwCtrl.Api.Controllers.Components;
 public class ComponentControllerBase<TComponent> : ControllerBase
     where TComponent : Component
 {
+    [FromServices] public required AdHocFlowExecutor FlowExecutor { get; init; }
+    
     protected TComponent Component => (ControllerContext.ActionDescriptor.Properties[nameof(Component)] as TComponent)!;
 
     [HttpGet("config")]

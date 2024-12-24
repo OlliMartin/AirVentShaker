@@ -34,7 +34,7 @@ public class DelegatingCommandExecutor : ICommandExecutor
             .BindAsync(RunExecutor);
     }
     
-    public async Task<Either<CommandError, CommandOutcome>> ExecuteAsync(ICommand command, CancellationToken cancelToken = default)
+    public async Task<Either<FlowError, CommandOutcome>> ExecuteAsync(ICommand command, CancellationToken cancelToken = default)
     {
         Stopwatch swExec = Stopwatch.StartNew();
         
@@ -49,13 +49,13 @@ public class DelegatingCommandExecutor : ICommandExecutor
         
         return outcomeWithState.BiBind<CommandOutcome>( 
             tuple => tuple.Outcome with { ExecutionDuration = Option<TimeSpan>.Some(swExec.Elapsed) }, 
-            err => err with { ExecutionDuration = Option<TimeSpan>.Some(swExec.Elapsed) } 
+            err => err
         );
     }
 
     private static MyState<CommandState, Unit> SetStartTime()
     {
-        return state => Task.FromResult<Either<CommandError, (CommandState State, Unit Outcome)>>((state with { StartDate = DateTime.UtcNow }, Unit.Default));
+        return state => Task.FromResult<Either<FlowError, (CommandState State, Unit Outcome)>>((state with { StartDate = DateTime.UtcNow }, Unit.Default));
     }
     
     private static MyState<CommandState, ICommandExecutor> FindCommandExecutor(Unit _)
@@ -68,16 +68,16 @@ public class DelegatingCommandExecutor : ICommandExecutor
             {
                 state.Logger.LogError("No command executor found that handles command type {typeName}.", state.Command.GetType().FullName);
 
-                return Task.FromResult<Either<CommandError, (CommandState State, ICommandExecutor Outcome)>>(Prelude.Left<CommandError>(new ProgrammingError(
+                return Task.FromResult<Either<FlowError, (CommandState State, ICommandExecutor Outcome)>>(Prelude.Left<FlowError>(new ProgrammingError(
                     $"No command executor found that handles command type {state.Command.GetType().FullName}.",
                     2)));
             }
         
-            return Task.FromResult<Either<CommandError, (CommandState State, ICommandExecutor Outcome)>>((state, executor));
+            return Task.FromResult<Either<FlowError, (CommandState State, ICommandExecutor Outcome)>>((state, executor));
         };
     }
     
-    private static Abstractions.MyState<CommandState, CommandOutcome> RunExecutor(ICommandExecutor commandExecutor)
+    private static MyState<CommandState, CommandOutcome> RunExecutor(ICommandExecutor commandExecutor)
     {
         return async state =>
         {
@@ -87,7 +87,7 @@ public class DelegatingCommandExecutor : ICommandExecutor
             
             return either.BiMap(
                 oc => (state, oc),
-                err => err
+                FlowError (err) => err
             );
         };
     }

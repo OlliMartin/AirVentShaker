@@ -3,32 +3,19 @@ using LanguageExt.Common;
 
 namespace Oma.WndwCtrl.Abstractions.Errors;
 
-public record CommandError : Error, ICommandExecutionMetadata
+public record CommandError : FlowError, ICommandExecutionMetadata
 {
-    private CommandError(TechnicalError technicalError)
+    protected CommandError(Error other) : base(other)
     {
-        Message = technicalError.Message;
-        IsExceptional = technicalError.IsExceptional;
-        IsExpected = technicalError.IsExpected;
-        
-        Inner = Option<Error>.Some(technicalError);
-    }
-    
-    public override bool Is<E>()
-    {
-        // TODO: Wrong implementation
-        if(this is E) return true;
-        return false;
     }
 
-    public override ErrorException ToErrorException()
+    protected CommandError(TechnicalError technicalError) : base(technicalError)
     {
-        throw new NotImplementedException();
     }
 
-    public override string Message { get; }
-    public override bool IsExceptional { get; }
-    public override bool IsExpected { get; }
+    protected CommandError(string message, bool isExceptional, bool isExpected) : base(message, isExceptional, isExpected)
+    {
+    }
 
     public override Option<Error> Inner { get; } = Option<Error>.None;
 

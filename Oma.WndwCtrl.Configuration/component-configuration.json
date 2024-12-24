@@ -4,16 +4,24 @@
       "type": "sensor",
       "queryCommand": {
         "type": "cli",
-        "fileName": "cmd",
-        "arguments": "ping xkcd.com"
+        "fileName": "ping",
+        "arguments": "xkcd.com"
       }
     },
-    "ping-google": {
+    "failing-sensor": {
       "type": "sensor",
       "queryCommand": {
         "type": "cli",
-        "fileName": "cmd",
-        "arguments": "ping google.com"
+        "fileName": "doesnt-exist",
+        "arguments": "N/A"
+      }
+    },
+    "invalid-parameters": {
+      "type": "sensor",
+      "queryCommand": {
+        "type": "cli",
+        "fileName": "ping",
+        "arguments": "--this-should-not-work"
       }
     }
   }
