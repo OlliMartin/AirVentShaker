@@ -18,7 +18,7 @@ public class SensorController : ComponentControllerBase<Sensor>
         return flowResult.BiFold<IActionResult>(
             state: null!,
             Right: (_, outcome) => Ok(outcome),
-            Left: (_, error) => Problem(error.Message,  statusCode: error.IsExceptional ? 500 : 400)
+            Left: (_, error) => Problem(error.Message, title: $"[{error.Code}] A {error.GetType().Name} occurred.", statusCode: error.IsExceptional ? 500 : 400)
         );
     }
 }

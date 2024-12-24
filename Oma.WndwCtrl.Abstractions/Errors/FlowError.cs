@@ -7,6 +7,7 @@ public record FlowError : Error
 {
     protected FlowError(Error other) : this(other.Message, other.IsExceptional, other.IsExpected)
     {
+        Code = other.Code;
         Inner = other;
     }
 
@@ -21,6 +22,7 @@ public record FlowError : Error
         IsExpected = isExpected;
     }
     
+    public override int Code { get; }
     public override string Message { get; }
     public override bool IsExceptional { get; }
     public override bool IsExpected { get; }
