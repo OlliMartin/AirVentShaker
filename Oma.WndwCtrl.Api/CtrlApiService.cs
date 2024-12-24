@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Api.Conventions;
+using Oma.WndwCtrl.Api.Extensions;
 using Oma.WndwCtrl.Configuration.Model;
 using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.CoreAsp.Conventions;
@@ -27,6 +28,7 @@ public class CtrlApiService : WebApplicationWrapper<CtrlApiService>, IApiService
 
     protected override IServiceCollection ConfigureServices(IServiceCollection services) => base
         .ConfigureServices(services)
+        .AddComponentApi()
         .AddSingleton(_configurationAccessor);
     
     public Task ForceStopAsync(CancellationToken cancelToken)

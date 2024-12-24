@@ -1,5 +1,5 @@
 using LanguageExt;
-using LanguageExt.Common;
+using static LanguageExt.Prelude;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Errors;
 using Oma.WndwCtrl.Abstractions.Model;
@@ -9,8 +9,13 @@ namespace Oma.WndwCtrl.Core.Executors.Commands;
 
 public class CliCommandExecutor : ICommandExecutor<CliCommand>
 {
-    public Task<Either<CommandError, CommandOutcome>> ExecuteAsync(CliCommand command, CancellationToken cancelToken = default)
+    public async Task<Either<FlowError, CommandOutcome>> ExecuteAsync(
+        CliCommand command, CancellationToken cancelToken = default
+    )
     {
-        throw new NotImplementedException();
+        return Right(new CommandOutcome()
+        {
+            OutcomeRaw = "This is a test cli outcome"
+        });
     }
 }

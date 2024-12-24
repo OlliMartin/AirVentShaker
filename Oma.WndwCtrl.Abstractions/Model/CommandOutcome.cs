@@ -2,7 +2,7 @@ using LanguageExt;
 
 namespace Oma.WndwCtrl.Abstractions.Model;
 
-public record CommandOutcome : ICommandExecutionMetadata
+public record CommandOutcome : ICommandExecutionMetadata, IOutcome
 {
     public string OutcomeRaw { get; set; } = string.Empty;
     
