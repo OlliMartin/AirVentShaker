@@ -4,6 +4,7 @@ namespace Oma.WndwCtrl.Abstractions.Model;
 
 public record CommandOutcome : ICommandExecutionMetadata, IOutcome
 {
+    public bool Success { get; set; }
     public string OutcomeRaw { get; set; } = string.Empty;
     
     public Option<TimeSpan> ExecutionDuration { get; set; } = Option<TimeSpan>.None;

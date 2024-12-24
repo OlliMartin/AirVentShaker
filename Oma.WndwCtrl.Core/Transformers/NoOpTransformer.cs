@@ -11,7 +11,7 @@ public class NoOpTransformer : IOutcomeTransformer
         Either<FlowError, CommandOutcome> commandOutcome, CancellationToken cancelToken = default
     ) =>
         Task.FromResult(commandOutcome.BiBind<TransformationOutcome>(
-            Right: outcome => new TransformationOutcome() { OutcomeRaw = outcome.OutcomeRaw },
+            Right: outcome => new TransformationOutcome(outcome),
             Left: error => error
         ));
 }

@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization.Metadata;
+using LanguageExt;
 using Microsoft.AspNetCore.Mvc;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Api.Conventions;
 using Oma.WndwCtrl.Api.Extensions;
 using Oma.WndwCtrl.Configuration.Model;
+using Oma.WndwCtrl.Core.Model.Commands;
 using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.CoreAsp.Conventions;
 using Scalar.AspNetCore;
@@ -18,6 +21,16 @@ public class CtrlApiService : WebApplicationWrapper<CtrlApiService>, IApiService
     {
         _logger = logger;
         _configurationAccessor = configurationAccessor;
+    }
+
+    protected override IMvcCoreBuilder PostConfigureMvc(IMvcCoreBuilder builder)
+    {
+        builder.AddJsonOptions(opts =>
+        {
+            // Leave that in for later
+        });
+        
+        return base.PostConfigureMvc(builder);
     }
 
     protected override MvcOptions PreConfigureMvcOptions(MvcOptions options)

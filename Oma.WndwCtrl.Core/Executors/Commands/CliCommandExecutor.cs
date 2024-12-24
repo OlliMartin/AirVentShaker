@@ -38,6 +38,7 @@ public class CliCommandExecutor : ICommandExecutor<CliCommand>
         
         return Right(new CommandOutcome()
         {
+            Success = process.ExitCode == 0,
             OutcomeRaw = process.ExitCode == 0 ? allText 
                 : string.IsNullOrEmpty(errorText) ? allText : errorText
         });
