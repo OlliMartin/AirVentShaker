@@ -1,7 +1,25 @@
 using FluentAssertions;
+using LanguageExt;
+using LanguageExt.Common;
+using Oma.WndwCtrl.CliOutputParser.Interfaces;
 using Xunit.Abstractions;
 
 namespace Oma.WndwCtrl.CliOutputParser.Tests;
+
+public class XUnitLogger : IParserLogger
+{
+    private readonly ITestOutputHelper _output;
+
+    public XUnitLogger(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    public void Log(object message)
+    {
+        _output.WriteLine(message.ToString()?.Replace("\r", string.Empty));
+    }
+}
 
 public class CliOutputParserImplTests
 {
@@ -36,30 +54,33 @@ public class CliOutputParserImplTests
 
     public CliOutputParserImplTests(ITestOutputHelper outputHelper)
     {
-        _instance = new(obj => outputHelper.WriteLine(obj.ToString()?.Replace("\r", string.Empty)));
+        XUnitLogger logger = new(outputHelper);
+        _instance = new(logger);
     }
 
     [Fact]
     public void ShouldParseTransformationSuccessfully()
     {
         const string transformationInput = """
-                                           Anchor.From("Pinging xkcd.com");
-                                           Anchor.To("Ping statistics");
-                                           Regex.Match($"time=(\d+)ms");
+                                           Anchor.From('Pinging xkcd.com');
+                                           Anchor.To('Ping statistics');
+                                           Regex.Match($'time=(\d+)ms');
                                            Regex.YieldGroup(1); 
                                            Values.Average();
                                            """;
-
-        List<object> output = new();
         
-        var action = () =>
-        {
-            var enumerable = _instance.Parse(transformationInput, _testInputPing);
-            output = enumerable.ToList();
-        };
-        action.Should().NotThrow();
-        output.Should().HaveCount(1);
-        output.First().Should().Be(8.25);
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformationInput, _testInputPing);
+        
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be(8.25);      
+            },
+            Left: val => val.Should().BeNull()
+        );
     }
 
     [Fact]
@@ -72,103 +93,147 @@ public class CliOutputParserImplTests
                             """;
 
         const string transformation = """
-                                      Regex.Match($"^match\s(\d)");
+                                      Regex.Match($'^match\s(\d)');
                                       Regex.YieldGroup(1); 
                                       Values.Sum();
                                       """;
         
-        List<object> output = new();
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformation, text);
         
-        var action = () =>
-        {
-            var enumerable = _instance.Parse(transformation, text);
-            output = enumerable.ToList();
-        };
-        action.Should().NotThrow();
-        output.Should().HaveCount(1);
-        output.First().Should().Be(4); // Not 6 because there is no match in the regex.
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be(4);      
+            },
+            Left: val => val.Should().BeNull()
+        );
     }
     
     [Fact]
     public void ShouldFailOnExtraneousInput()
     {
         const string transformationInput = """
-                                           Anchor.From("Pinging xkcd.com").To("Ping statistics");
-                                           Regex.Match($"time=(\d+)ms").YieldGroup(1); 
+                                           Anchor.From('Pinging xkcd.com').To('Ping statistics');
+                                           Regex.Match($'time=(\d+)ms').YieldGroup(1); 
                                            Values.Average2();
                                            """;
-
-        var action = () => _instance.Parse(transformationInput, _testInputPing);
-
-        action.Should().Throw<Exception>();
+        
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformationInput, _testInputPing);
+        
+        transformationResult.Match(
+            Right: val => val.Should().BeNull(),
+            Left: val => val.Should().BeOfType<ManyErrors>()
+        );
     }
 
     [Fact]
     public void ShouldApplyAnchors()
     {
         const string transformationInput = """
-                                           Anchor.From("statistics");
-                                           Anchor.To("151.101.64.67");
+                                           Anchor.From('statistics');
+                                           Anchor.To('151.101.64.67');
                                            """;
 
-        List<object> output = new();
-
-        var action = () =>
-        {
-            var enumerable = _instance.Parse(transformationInput, _testInputPing);
-            output = enumerable.ToList();
-        };
-
-        action.Should().NotThrow();
-        output.Should().HaveCount(1);
-        output.First().Should().Be("statistics for 151.101.64.67");
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformationInput, _testInputPing);
+        
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be("statistics for 151.101.64.67");      
+            },
+            Left: val => val.Should().BeNull()
+        );
     }
 
     [Fact]
     public void ShouldHandleNestedTransformations()
     {
         const string transformationInput = """
-                                           Regex.Match($"^.*$"); // [ s ] -> [ [ s1, s2 ] ]
-                                           Regex.Match($"(\d)"); // [ [ s ] ] -> [ [ [ s ] ] ]
+                                           Regex.Match($'^.*$'); // [ s ] -> [ [ s1, s2 ] ]
+                                           Regex.Match($'(\d)'); // [ [ s ] ] -> [ [ [ s ] ] ]
                                            Values.Last(); // Choose inner-most regex group
                                            Values.Last(); // Choose from line
                                            Values.First(); // Choose i dont know what
                                            """;
 
-        List<object> output = new();
-
-        var action = () =>
-        {
-            var enumerable = _instance.Parse(transformationInput, _testInputNested);
-            output = enumerable.ToList();
-        };
-
-        action.Should().NotThrow();
-
-        output.Should().HaveCount(1);
-        output.First().Should().Be("7");
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformationInput, _testInputNested);
+        
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be("7");      
+            },
+            Left: val => val.Should().BeNull()
+        );
     }
 
     [Fact]
     public void ShouldHandleDoubleNestedTransformations()
     {
         const string transformationInput = """
-                                           Regex.Match($"^.*$");
-                                           Regex.Match($"\d\.\w");
-                                           Regex.Match($".");
+                                           Regex.Match($'^.*$');
+                                           Regex.Match($'\d\.\w');
+                                           Regex.Match($'.');
                                            Values.Last();
                                            Values.Last();
                                            Values.Last();
                                            Values.Last();
                                            """;
 
-        List<object> output = new();
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformationInput, _testInputNested2);
+        
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be("i");      
+            },
+            Left: val => val.Should().BeNull()
+        );
+    }
 
-        var action = () => { output = _instance.Parse(transformationInput, _testInputNested2).ToList(); };
+    [Theory]
+    [InlineData("Min", 1)]
+    [InlineData("Max", 9)]
+    [InlineData("Average", 5)]
+    [InlineData("Sum", 45)]
+    [InlineData("First", "9")]
+    [InlineData("Last", "1")]
+    public void ShouldApplyAggregateFunctions(string aggregate, object expectedValue)
+    {
+        const string text = """
+                            9 8 7 6 5 4 3 2 1
+                            """;
 
-        action.Should().NotThrow();
-
-        output.Should().HaveCount(1);
-        output.First().Should().Be("i");
+        string transformation = $"""
+                                  Regex.Match($'(\d)');
+                                  Values.Index(1); // Picks the group instead of the full match; But they are the same
+                                  Values.{aggregate}(); // Index=0 is the entire match
+                                """;
+        
+        Either<Error, IEnumerable<object>> transformationResult 
+            =  _instance.Parse(transformation, text);
+        
+        transformationResult.Match(
+            Right: output =>
+            {
+                List<object> res = output.ToList();
+                res.Should().HaveCount(1);
+                res.First().Should().Be(expectedValue);      
+            },
+            Left: val => val.Should().BeNull()
+        );
     }
 }
