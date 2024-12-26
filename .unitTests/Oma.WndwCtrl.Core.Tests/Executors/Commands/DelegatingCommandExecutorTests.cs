@@ -17,6 +17,8 @@ public class DelegatingCommandExecutorTests
     private readonly DelegatingCommandExecutor _instance;
     private readonly ICommand _commandMock;
     private readonly ICommandExecutor _executorMock;
+
+    private readonly CancellationToken _cancelToken;
     
     public DelegatingCommandExecutorTests()
     {
@@ -29,9 +31,13 @@ public class DelegatingCommandExecutorTests
         };
         
         _executorMock.Handles(Arg.Any<ICommand>()).Returns(true);
-        _executorMock.ExecuteAsync(Arg.Any<ICommand>()).Returns(Right(outcome));
+        
+        _executorMock.ExecuteAsync(Arg.Any<ICommand>(), cancelToken: Arg.Any<CancellationToken>())
+            .Returns(Right(outcome));
      
         _commandMock = Substitute.For<ICommand>();
+
+        _cancelToken = TestContext.Current.CancellationToken;
         
         _instance = new(loggerMock, [_executorMock]);
     }
@@ -39,7 +45,7 @@ public class DelegatingCommandExecutorTests
     [Fact]
     public async Task ShouldSuccessfullyExecute()
     {
-        var result = await _instance.ExecuteAsync(_commandMock);
+        var result = await _instance.ExecuteAsync(_commandMock, cancelToken: _cancelToken);
         
         result.IsRight.Should().BeTrue();
 
@@ -54,7 +60,7 @@ public class DelegatingCommandExecutorTests
     {
         _executorMock.Handles(Arg.Any<ICommand>()).Returns(false);
         
-        var result = await _instance.ExecuteAsync(_commandMock);
+        var result = await _instance.ExecuteAsync(_commandMock, cancelToken: _cancelToken);
         
         result.IsLeft.Should().BeTrue();
         result.Match(_ => { }, err => err.Message.Should().Contain("programming"));
@@ -65,10 +71,10 @@ public class DelegatingCommandExecutorTests
     {
         var simulatedError = new TechnicalError("Simulated sub-command executor error", Code: 1337);
         
-        _executorMock.ExecuteAsync(Arg.Any<ICommand>())
+        _executorMock.ExecuteAsync(Arg.Any<ICommand>(), cancelToken: Arg.Any<CancellationToken>())
             .Returns(Left<FlowError>(simulatedError));
         
-        var result = await _instance.ExecuteAsync(_commandMock);
+        var result = await _instance.ExecuteAsync(_commandMock, cancelToken: _cancelToken);
         
         result.IsLeft.Should().BeTrue();
         result.Match(_ => { }, err => err.Should().BeOfType<FlowError>());
@@ -79,7 +85,7 @@ public class DelegatingCommandExecutorTests
     {
         _executorMock.Handles(Arg.Any<ICommand>()).Returns(false);
         
-        var result = await _instance.ExecuteAsync(_commandMock);
+        var result = await _instance.ExecuteAsync(_commandMock, cancelToken: _cancelToken);
         
         result.IsLeft.Should().BeTrue();
 

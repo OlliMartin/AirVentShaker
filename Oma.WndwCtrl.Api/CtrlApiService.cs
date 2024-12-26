@@ -12,37 +12,21 @@ using Scalar.AspNetCore;
 
 namespace Oma.WndwCtrl.Api;
 
-public class CtrlApiService : WebApplicationWrapper<CtrlApiService>, IApiService
+public class CtrlApiService(ILogger<CtrlApiService> logger, ComponentConfigurationAccessor configurationAccessor)
+    : WebApplicationWrapper<CtrlApiService>, IApiService
 {
-    private readonly ILogger _logger;
-    private readonly ComponentConfigurationAccessor _configurationAccessor;
-    
-    public CtrlApiService(ILogger<CtrlApiService> logger, ComponentConfigurationAccessor configurationAccessor)
-    {
-        _logger = logger;
-        _configurationAccessor = configurationAccessor;
-    }
-
-    protected override IMvcCoreBuilder PostConfigureMvc(IMvcCoreBuilder builder)
-    {
-        builder.AddJsonOptions(opts =>
-        {
-            // Leave that in for later
-        });
-        
-        return base.PostConfigureMvc(builder);
-    }
+    private readonly ILogger _logger = logger;
 
     protected override MvcOptions PreConfigureMvcOptions(MvcOptions options)
     {
-        options.Conventions.Add(new ComponentApplicationConvention(_configurationAccessor));
+        options.Conventions.Add(new ComponentApplicationConvention(configurationAccessor));
         return base.PreConfigureMvcOptions(options);
     }
 
     protected override IServiceCollection ConfigureServices(IServiceCollection services) => base
         .ConfigureServices(services)
         .AddComponentApi()
-        .AddSingleton(_configurationAccessor);
+        .AddSingleton(configurationAccessor);
     
     public Task ForceStopAsync(CancellationToken cancelToken)
     {
