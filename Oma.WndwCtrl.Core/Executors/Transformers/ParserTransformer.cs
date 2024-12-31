@@ -1,6 +1,5 @@
 using LanguageExt;
 using LanguageExt.Common;
-using LanguageExt.DataTypes.Serialisation;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Errors;
 using Oma.WndwCtrl.Abstractions.Model;
@@ -21,14 +20,26 @@ public class ParserTransformer(ICliOutputParser cliOutputParser) : IOutcomeTrans
                 // Cannot use empty string for concatenation, otherwise comments will break a snippet,
                 // Since all commands after the comment are treated as a comment as well.
                 string commandText = string.Join(Environment.NewLine, transformation.Statements);
-                Either<Error, ParserResult> parseResult = cliOutputParser.Parse(commandText, outcome.OutcomeRaw);
+                
+                Either<Error, ParserResult> parseResult;
+
+                if (outcome is TransformationOutcome<ParserResult> parsedOutcome)
+                {
+                    IEnumerable<object> values = parsedOutcome.Outcome!;
+                    
+                    parseResult = cliOutputParser.Parse(commandText, values);   
+                }
+                else
+                {
+                    parseResult = cliOutputParser.Parse(commandText, outcome.OutcomeRaw);
+                }
 
                 return parseResult.MapLeft<FlowError>(err => new TransformationError(err));
             },
             Left: err => err 
-        ).BiBind<TransformationOutcome>(
-            parseResult => new TransformationOutcome<ParserResult>(parseResult, success: true),
-            err => err
+        ).BiBind<FlowError, TransformationOutcome>(
+            err => err,
+            parseResult => new TransformationOutcome<ParserResult>(parseResult, success: true)
         );
         
         return Task.FromResult(result);
