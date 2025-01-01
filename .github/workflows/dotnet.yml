@@ -26,3 +26,7 @@ jobs:
       run: dotnet build --no-restore -warnaserror
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: JetBrains ReSharper Inspect Code
+      uses: JetBrains/ReSharper-InspectCode@v0.8
+      with:
+        solution: 'Oma.WndwCtrl.sln'
