@@ -9,9 +9,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+jobs: 
   build:
-
+    name: 'Build & Analyze'
+    permissions: write-all  
     runs-on: ubuntu-latest
 
     steps:
