@@ -27,7 +27,7 @@ public partial class TransformationListener : CliOutputParserBaseListener
 
   public override void EnterStatement(Grammar.CliOutputParser.StatementContext context)
   {
-    _log($"{Environment.NewLine}\t### COMMAND -> {context.GetChild(0).GetText()}");
+    _log($"{Environment.NewLine}\t### COMMAND -> {context.GetChild(i: 0).GetText()}");
     base.EnterStatement(context);
   }
 }

@@ -6,7 +6,8 @@ public record ProgrammingError : TechnicalError
 
   public ProgrammingError(string Message, int Code) : base(
     $"An error caused by insufficient programming occured: '{Message}'",
-    ErrorCodeOffset + Code)
+    ErrorCodeOffset + Code
+  )
   {
   }
 }

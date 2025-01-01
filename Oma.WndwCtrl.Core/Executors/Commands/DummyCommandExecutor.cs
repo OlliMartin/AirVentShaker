@@ -24,10 +24,12 @@ public class DummyCommandExecutor : ICommandExecutor<DummyCommand>
     }
     else
     {
-      result = Right(new CommandOutcome
-      {
-        OutcomeRaw = message,
-      });
+      result = Right(
+        new CommandOutcome
+        {
+          OutcomeRaw = message,
+        }
+      );
     }
 
     return Task.FromResult(result);

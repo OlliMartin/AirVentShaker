@@ -29,7 +29,9 @@ public class CliCommandExecutor : ICommandExecutor<CliCommand>
 
     if (process is null)
     {
-      return Left<FlowError>(new CliCommandError("Could not obtain process instance.", true, false));
+      return Left<FlowError>(
+        new CliCommandError("Could not obtain process instance.", isExceptional: true, isExpected: false)
+      );
     }
 
     await process.WaitForExitAsync(cancelToken);
@@ -37,11 +39,13 @@ public class CliCommandExecutor : ICommandExecutor<CliCommand>
     string allText = await process.StandardOutput.ReadToEndAsync(cancelToken);
     string errorText = await process.StandardError.ReadToEndAsync(cancelToken);
 
-    return Right(new CommandOutcome
-    {
-      Success = process.ExitCode == 0,
-      OutcomeRaw = process.ExitCode == 0 ? allText
-        : string.IsNullOrEmpty(errorText) ? allText : errorText,
-    });
+    return Right(
+      new CommandOutcome
+      {
+        Success = process.ExitCode == 0,
+        OutcomeRaw = process.ExitCode == 0 ? allText
+          : string.IsNullOrEmpty(errorText) ? allText : errorText,
+      }
+    );
   }
 }

@@ -47,7 +47,8 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
     StartTask = Service.StartAsync(CancellationTokenSource.Token, args);
 
     StartTask
-      .ContinueWith(t =>
+      .ContinueWith(
+        t =>
         {
           if (t.IsFaulted)
           {
@@ -62,7 +63,8 @@ public sealed record ServiceWrapper<TService> : IDisposable, IServiceWrapper<TSe
 
           CompletionTask = Service.WaitForShutdownAsync(CancellationTokenSource.Token);
         },
-        cancelToken)
+        cancelToken
+      )
       .ConfigureAwait(continueOnCapturedContext: false);
 
     return StartTask;

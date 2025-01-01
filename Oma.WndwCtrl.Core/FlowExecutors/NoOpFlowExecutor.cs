@@ -15,12 +15,15 @@ public class NoOpFlowExecutor : IFlowExecutor
     CancellationToken cancelToken = default
   )
   {
-    return Task.FromResult<Either<FlowError, TransformationOutcome>>(Right<TransformationOutcome>(
-      new TransformationOutcome<ICommand>(command)
-      {
-        Success = true,
-        OutcomeRaw = JsonSerializer.Serialize(command),
-        Outcome = command,
-      }));
+    return Task.FromResult<Either<FlowError, TransformationOutcome>>(
+      Right<TransformationOutcome>(
+        new TransformationOutcome<ICommand>(command)
+        {
+          Success = true,
+          OutcomeRaw = JsonSerializer.Serialize(command),
+          Outcome = command,
+        }
+      )
+    );
   }
 }
