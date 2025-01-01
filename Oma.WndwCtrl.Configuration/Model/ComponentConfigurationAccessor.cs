@@ -11,11 +11,15 @@ public class ComponentConfigurationAccessor
   {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     TypeInfoResolver = new DefaultJsonTypeInfoResolver()
-      .WithAddedModifier(JsonExtensions.GetPolymorphismModifierFor<ICommand>(
-        t => t.Name.Replace("Command", string.Empty))
+      .WithAddedModifier(
+        JsonExtensions.GetPolymorphismModifierFor<ICommand>(
+          t => t.Name.Replace("Command", string.Empty)
+        )
       )
-      .WithAddedModifier(JsonExtensions.GetPolymorphismModifierFor<ITransformation>(
-        t => t.Name.Replace("Transformation", string.Empty))
+      .WithAddedModifier(
+        JsonExtensions.GetPolymorphismModifierFor<ITransformation>(
+          t => t.Name.Replace("Transformation", string.Empty)
+        )
       ),
   };
 

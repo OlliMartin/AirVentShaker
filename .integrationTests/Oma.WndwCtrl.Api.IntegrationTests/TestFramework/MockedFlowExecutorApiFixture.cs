@@ -25,10 +25,9 @@ public sealed class MockedFlowExecutorApiFixture : WebApplicationFactory<CtrlApi
 
   protected override void ConfigureWebHost(IWebHostBuilder builder)
   {
-    builder.ConfigureServices(services =>
-    {
-      services.AddKeyedScoped<IFlowExecutor, NoOpFlowExecutor>(ServiceKeys.AdHocFlowExecutor);
-    });
+    builder.ConfigureServices(
+      services => { services.AddKeyedScoped<IFlowExecutor, NoOpFlowExecutor>(ServiceKeys.AdHocFlowExecutor); }
+    );
 
     base.ConfigureWebHost(builder);
   }

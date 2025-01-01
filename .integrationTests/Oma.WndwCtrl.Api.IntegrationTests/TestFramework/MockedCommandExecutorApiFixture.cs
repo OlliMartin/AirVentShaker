@@ -25,12 +25,14 @@ public sealed class MockedCommandExecutorApiFixture : WebApplicationFactory<Ctrl
 
   protected override void ConfigureWebHost(IWebHostBuilder builder)
   {
-    builder.ConfigureServices(services =>
-    {
-      // Remove potentially harmful executors, only allow dummy execution
-      services.RemoveAll<ICommandExecutor>()
-        .AddScoped<ICommandExecutor, DummyCommandExecutor>();
-    });
+    builder.ConfigureServices(
+      services =>
+      {
+        // Remove potentially harmful executors, only allow dummy execution
+        services.RemoveAll<ICommandExecutor>()
+          .AddScoped<ICommandExecutor, DummyCommandExecutor>();
+      }
+    );
 
     base.ConfigureWebHost(builder);
   }

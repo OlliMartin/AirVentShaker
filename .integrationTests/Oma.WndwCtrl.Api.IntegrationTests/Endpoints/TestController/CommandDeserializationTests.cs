@@ -36,14 +36,16 @@ public sealed partial class CommandDeserializationTests : ApiFixtureTestBase<Moc
     using HttpResponseMessage httpResponse = await _httpClient.SendAsync(httpRequestMessage, _cancelToken);
 
     httpResponse.Should().Be200Ok().And
-      .Satisfy<TransformationOutcome<BaseCommand>>(response =>
-      {
-        response.Success.Should().BeTrue();
-        response.Outcome.Should().NotBeNull();
-        response.Outcome!.Retries.Should().Be(1);
-        response.Outcome!.Transformations.Should().HaveCount(1);
-        response.Outcome!.Transformations.First().Should().BeOfType<ParserTransformation>();
-      });
+      .Satisfy<TransformationOutcome<BaseCommand>>(
+        response =>
+        {
+          response.Success.Should().BeTrue();
+          response.Outcome.Should().NotBeNull();
+          response.Outcome!.Retries.Should().Be(expected: 1);
+          response.Outcome!.Transformations.Should().HaveCount(expected: 1);
+          response.Outcome!.Transformations.First().Should().BeOfType<ParserTransformation>();
+        }
+      );
   }
 
   [Theory]
