@@ -31,3 +31,10 @@ jobs:
       uses: JetBrains/ReSharper-InspectCode@v0.8
       with:
         solution: 'Oma.WndwCtrl.sln'
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.5.0
+      with:
+        name: 'Upload Code Inspection Result'
+        path: 'results.sarif.json'
+        if-no-files-found: error
+        retention-days: 7
