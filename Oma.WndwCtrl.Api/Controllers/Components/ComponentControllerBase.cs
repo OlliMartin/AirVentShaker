@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Errors;
 using Oma.WndwCtrl.Abstractions.Model;
+using Oma.WndwCtrl.Api.Attributes;
 using Oma.WndwCtrl.Core.Interfaces;
 using Oma.WndwCtrl.Core.Model;
+using Oma.WndwCtrl.CoreAsp.Extensions;
 
 namespace Oma.WndwCtrl.Api.Controllers.Components;
 
@@ -33,6 +35,7 @@ public class ComponentControllerBase<TComponent> : ControllerBase
 
   [HttpGet("config")]
   [EndpointSummary("Component Details")]
+  [AcaadHidden]
   public IActionResult GetDetails() => Ok(Component);
 
   [NonAction]
@@ -40,6 +43,8 @@ public class ComponentControllerBase<TComponent> : ControllerBase
   {
     Either<FlowError, FlowOutcome> flowResult =
       await FlowExecutor.ExecuteAsync(command, HttpContext.RequestAborted);
+
+    flowResult.RegisterForDispose(HttpContext);
 
     return flowResult.BiFold<IActionResult>(
       null!,

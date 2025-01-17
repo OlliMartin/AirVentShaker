@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Oma.WndwCtrl.Abstractions;
+using Oma.WndwCtrl.Api.OpenApi.ComponentWriters;
+using Oma.WndwCtrl.Api.OpenApi.Interfaces;
 using Oma.WndwCtrl.Api.Transformations.CliParser;
 using Oma.WndwCtrl.CliOutputParser;
 using Oma.WndwCtrl.CliOutputParser.Interfaces;
@@ -14,10 +16,13 @@ namespace Oma.WndwCtrl.Api.Extensions;
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Extension methods")]
 public static class IServiceCollectionExtensions
 {
-  public static IServiceCollection AddComponentApi(this IServiceCollection services)
+  public static IServiceCollection AddComponentApi(
+    this IServiceCollection services,
+    IConfiguration configuration
+  )
   {
     services.AddConfiguration()
-      .AddCommandExecutors()
+      .AddCommandExecutors(configuration)
       .AddScoped<IFlowExecutor>(
         sp => sp.GetRequiredKeyedService<IFlowExecutor>(ServiceKeys.AdHocFlowExecutor)
       )
@@ -32,4 +37,10 @@ public static class IServiceCollectionExtensions
 
     return services;
   }
+
+  public static IServiceCollection AddOpenApiComponentWriters(this IServiceCollection services)
+    => services
+      .AddScoped<IOpenApiComponentWriter, ButtonComponentWriter>()
+      .AddScoped<IOpenApiComponentWriter, SensorComponentWriter>()
+      .AddScoped<IOpenApiComponentWriter, SwitchComponentWriter>();
 }

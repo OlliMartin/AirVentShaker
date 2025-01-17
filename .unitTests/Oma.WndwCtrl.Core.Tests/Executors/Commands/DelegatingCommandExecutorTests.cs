@@ -4,13 +4,15 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Errors;
+using Oma.WndwCtrl.Abstractions.Extensions;
+using Oma.WndwCtrl.Abstractions.Metrics;
 using Oma.WndwCtrl.Abstractions.Model;
 using Oma.WndwCtrl.Core.Executors.Commands;
 using static LanguageExt.Prelude;
 
 namespace Oma.WndwCtrl.Core.Tests.Executors.Commands;
 
-public class DelegatingCommandExecutorTests
+public sealed class DelegatingCommandExecutorTests : IDisposable
 {
   private const string _rawOutcome = "This is a test outcome.";
 
@@ -19,27 +21,31 @@ public class DelegatingCommandExecutorTests
   private readonly ICommandExecutor _executorMock;
 
   private readonly DelegatingCommandExecutor _instance;
+  private readonly CommandOutcome _outcome;
 
   public DelegatingCommandExecutorTests()
   {
     ILogger<DelegatingCommandExecutor>? loggerMock = Substitute.For<ILogger<DelegatingCommandExecutor>>();
     _executorMock = Substitute.For<ICommandExecutor>();
 
-    CommandOutcome outcome = new()
-    {
-      OutcomeRaw = _rawOutcome,
-    };
+    _outcome = new CommandOutcome(_rawOutcome);
 
     _executorMock.Handles(Arg.Any<ICommand>()).Returns(returnThis: true);
 
     _executorMock.ExecuteAsync(Arg.Any<ICommand>(), Arg.Any<CancellationToken>())
-      .Returns(Right(outcome));
+      .Returns(Right(_outcome));
 
     _commandMock = Substitute.For<ICommand>();
+    IAcaadCoreMetrics metricsMock = Substitute.For<IAcaadCoreMetrics>();
 
     _cancelToken = TestContext.Current.CancellationToken;
 
-    _instance = new DelegatingCommandExecutor(loggerMock, [_executorMock,]);
+    _instance = new DelegatingCommandExecutor(loggerMock, [_executorMock,], metricsMock);
+  }
+
+  public void Dispose()
+  {
+    _outcome.Dispose();
   }
 
   [Fact]
@@ -53,6 +59,8 @@ public class DelegatingCommandExecutorTests
       Right: val => val.OutcomeRaw.Should().Be(_rawOutcome),
       Left: val => val.Should().BeNull()
     );
+
+    result.Dispose();
   }
 
   [Fact]
@@ -66,6 +74,8 @@ public class DelegatingCommandExecutorTests
 
     // TODO:
     // result.Match(_ => { }, err => err.Message.Should().Contain("programming"));
+
+    result.Dispose();
   }
 
   [Fact]
@@ -80,6 +90,8 @@ public class DelegatingCommandExecutorTests
 
     result.IsLeft.Should().BeTrue();
     result.Match(_ => { }, err => err.Should().BeOfType<FlowError>());
+
+    result.Dispose();
   }
 
   [Fact]
@@ -99,5 +111,7 @@ public class DelegatingCommandExecutorTests
     //         err.ExecutedRetries.Should<Option<int>>().Be(Option<int>.None, because: "No executor is run.");
     //         err.ExecutionDuration.Should<Option<TimeSpan>>().NotBe(Option<TimeSpan>.None, because: "execution duration is always populated");
     //     });
+
+    result.Dispose();
   }
 }

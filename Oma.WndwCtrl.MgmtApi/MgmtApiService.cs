@@ -2,6 +2,7 @@ using Oma.WndwCtrl.Api.Extensions;
 using Oma.WndwCtrl.CommandProcessor;
 using Oma.WndwCtrl.CoreAsp;
 using Oma.WndwCtrl.Messaging.Bus;
+using Oma.WndwCtrl.MetricsApi;
 using Oma.WndwCtrl.MgmtApi.Extensions;
 using Oma.WndwCtrl.MgmtApi.Messaging;
 using Oma.WndwCtrl.MgmtApi.Model;
@@ -17,8 +18,9 @@ public class MgmtApiService(MessageBusAccessor? messageBusAccessor)
   {
     IServiceCollection result = base.ConfigureServices(services)
       .AddSingleton<ServiceState>()
-      .AddComponentApi()
+      .AddComponentApi(Configuration)
       .AddHostedService<ServiceWorker>()
+      .AddApiService<MetricsApiService>()
       .AddBackgroundService<MessageBusService>()
       .AddBackgroundService<EventLoggingService>()
       .AddBackgroundService<SchedulingService>()

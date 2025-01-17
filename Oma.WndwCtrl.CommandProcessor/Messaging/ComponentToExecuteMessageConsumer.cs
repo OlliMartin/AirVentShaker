@@ -4,9 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Oma.WndwCtrl.Abstractions;
 using Oma.WndwCtrl.Abstractions.Errors;
+using Oma.WndwCtrl.Abstractions.Extensions;
 using Oma.WndwCtrl.Abstractions.Messaging.Interfaces;
 using Oma.WndwCtrl.Abstractions.Messaging.Model.ComponentExecution;
 using Oma.WndwCtrl.Abstractions.Model;
+using Oma.WndwCtrl.CommandProcessor.Metrics;
 using Oma.WndwCtrl.Core.Interfaces;
 using Oma.WndwCtrl.Core.Model;
 
@@ -16,7 +18,8 @@ namespace Oma.WndwCtrl.CommandProcessor.Messaging;
 public class ComponentToExecuteMessageConsumer(
   ILogger<ComponentToExecuteMessageConsumer> logger,
   IMessageBusWriter messageBusWriter,
-  IServiceScopeFactory serviceScopeFactory
+  IServiceScopeFactory serviceScopeFactory,
+  CommandProcessingMetrics metrics
 )
   : IMessageConsumer<ComponentToRunEvent>
 {
@@ -54,10 +57,13 @@ public class ComponentToExecuteMessageConsumer(
       );
 
       await messageBusWriter.SendAsync(eventToRaise, cancelToken);
+      metrics.RecordFinishedCommandExecution(eventToRaise);
 
       executionResult |= either.IsRight
         ? ComponentExecutionResult.Succeeded
         : ComponentExecutionResult.Failed;
+
+      either.Dispose();
     }
 
     await RaiseExecutionFinishedAsync(executionResult, componentExecutingEvent, cancelToken);
@@ -84,6 +90,8 @@ public class ComponentToExecuteMessageConsumer(
     CancellationToken cancelToken
   )
   {
+    metrics.RecordSchedulingDelay(message);
+
     ComponentExecutingEvent componentExecutingEvent = new(message, commands.Count, DateTime.UtcNow);
     await messageBusWriter.SendAsync(componentExecutingEvent, cancelToken);
     return componentExecutingEvent;
