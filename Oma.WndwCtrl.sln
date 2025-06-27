@@ -94,8 +94,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oma.AirVentShaker.Api", "Om
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{BFC1D78D-AD18-484A-BB00-A83768BB93F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundFlow", "Z:\git\external\SoundFlow\Src\SoundFlow.csproj", "{93044E01-08FA-4D95-8076-8271DACE8DB2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
