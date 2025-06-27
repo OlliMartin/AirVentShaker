@@ -1,0 +1,47 @@
+﻿@page "/simulate"
+@rendermode InteractiveServer
+<PageTitle>Simulate</PageTitle>
+
+<h1>Simulate</h1>
+
+<EditForm Model="Model" OnValidSubmit="SubmitAsync" FormName="Simulation">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <button type="submit">Submit</button>
+</EditForm>
+
+<button @onclick="Reset">Reset</button>
+
+@code {
+    public TestModel Model { get; set; } = null!;
+    
+    public async Task SubmitAsync()
+    {
+        if (Model?.Temperature is not null)
+        {
+            // TempSensor.Simulate(Model.Temperature.Value);
+        }
+    
+        if (Model?.PwmPercentage is not null)
+        {
+            // await PwmController.OverrideDutyCycleAsync(Model.PwmPercentage.Value);
+        }
+    }
+    
+    public async Task Reset()
+    {
+        // TempSensor.Reset();
+        // await PwmController.ResetAsync();
+    }
+    
+    protected override void OnInitialized() =>
+        Model ??= new() { };
+    
+    public class TestModel
+    {
+        public int? PwmPercentage { get; set; }
+        
+        public decimal? Temperature { get; set; }
+    }
+}

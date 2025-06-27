@@ -2,14 +2,24 @@ namespace Oma.AirVentShaker.Api.Model;
 
 public class TestStep
 {
-  public float Frequency { get; init; }
+  public bool Active { get; set; } = true;
 
-  public TimeSpan Duration { get; init; }
+  public int Order { get; set; } = int.MaxValue;
+  
+  public float Frequency { get; set; }
 
-  public float TargetGravitationalForce { get; init; }
+  public TimeSpan Duration { get; set; }
+
+  public int DurationInSeconds
+  {
+    get => (int)Duration.TotalSeconds;
+    set => Duration = TimeSpan.FromSeconds(value);
+  }
+
+  public float TargetGravitationalForce { get; set; }
 
   public float Amplitude { get; set; } = 0.05f;
 
   public override string ToString() =>
-    $"Freq={Frequency}Hz;Dur={Duration};Target={TargetGravitationalForce}G;CurrA={Amplitude}";
+    $"[{Order}] Freq={Frequency}Hz;Dur={Duration};Target={TargetGravitationalForce}G;CurrA={Amplitude}";
 }

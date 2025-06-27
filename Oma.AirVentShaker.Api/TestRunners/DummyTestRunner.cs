@@ -11,7 +11,7 @@ public class DummyTestRunner(GlobalState globalState, IAudioService audioService
     globalState.ActiveDefinition = testDefinition;
     globalState.Stage = TestStage.Calibrate;
 
-    foreach (TestStep testStep in testDefinition.Steps)
+    foreach (TestStep testStep in testDefinition.Steps.Where(s => s.Active))
     {
       globalState.ActiveStep = testStep;
 

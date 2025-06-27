@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Oma.AirVentShaker.Api.Audio;
+using Oma.AirVentShaker.Api.Components;
 using Oma.AirVentShaker.Api.Interfaces;
 using Oma.AirVentShaker.Api.Messaging.Consumers;
 using Oma.AirVentShaker.Api.Model;
@@ -35,6 +36,12 @@ public class AirVentShakerApiService(
 
   protected override IServiceCollection ConfigureServices(IServiceCollection services)
   {
+    services.AddRazorComponents()
+      .AddInteractiveServerComponents()
+      .AddCircuitOptions(options => { options.DetailedErrors = true; });
+    
+    services.AddBlazorBootstrap();
+    
     base
       .ConfigureServices(services)
       .Configure<SensorSettings>(Configuration.GetSection(SensorSettings.SectionName))
@@ -43,8 +50,8 @@ public class AirVentShakerApiService(
       .UseMessageBus(_messageBusAccessor)
       .AddMessageConsumer<TimeSeriesPersistorMessageConsumer, GForceValueBatchEvent>()
       .AddMessageConsumer<AmplitudeAdjustingMessageConsumer, GForceValueBatchEvent>()
-      // .AddHostedService<SensorWorker>()
-      .AddHostedService<HighResSensorWorker>()
+      .AddHostedService<SensorWorker>()
+      //.AddHostedService<HighResSensorWorker>()
       .AddSingleton<ITestRunner, DummyTestRunner>()
       .AddSingleton<IAudioService, AudioService>();
 
@@ -61,6 +68,23 @@ public class AirVentShakerApiService(
     services.AddSignalR();
 
     return services;
+  }
+
+  protected override WebApplication PreAppRun(WebApplication app)
+  {
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+      app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    }
+    
+    app.UseAntiforgery();
+    app.MapStaticAssets();
+    
+    app.MapRazorComponents<App>()
+      .AddInteractiveServerRenderMode();
+    
+    return base.PreAppRun(app);
   }
 
   protected override WebApplication PostAppRun(

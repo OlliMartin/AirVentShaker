@@ -1,20 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Oma.WndwCtrl.Configuration\Oma.WndwCtrl.Configuration.csproj"/>
         <ProjectReference Include="..\Oma.WndwCtrl.Messaging\Oma.WndwCtrl.Messaging.csproj"/>
-        <ProjectReference Include="Z:\git\external\SoundFlow\Src\SoundFlow.csproj"/>
+        <!--        <ProjectReference Include="Z:\git\external\SoundFlow\Src\SoundFlow.csproj"/>-->
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazor.Bootstrap"/>
         <PackageReference Include="InfluxDB.Client"/>
         <PackageReference Include="Iot.Device.Bindings"/>
+        <PackageReference Include="SoundFlow"/>
         <PackageReference Include="System.Device.Gpio"/>
     </ItemGroup>
 
@@ -22,6 +25,25 @@
         <None Update="AirVentShakerApiService.config.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="Components\Components\TemperatureVsFanSpeedGraph.razor"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map"/>
     </ItemGroup>
 
 </Project>
