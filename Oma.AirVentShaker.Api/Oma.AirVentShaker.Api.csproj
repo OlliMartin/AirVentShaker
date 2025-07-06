@@ -10,7 +10,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Oma.WndwCtrl.Configuration\Oma.WndwCtrl.Configuration.csproj"/>
         <ProjectReference Include="..\Oma.WndwCtrl.Messaging\Oma.WndwCtrl.Messaging.csproj"/>
-        <!--        <ProjectReference Include="Z:\git\external\SoundFlow\Src\SoundFlow.csproj"/>-->
     </ItemGroup>
 
     <ItemGroup>
@@ -29,6 +28,8 @@
 
     <ItemGroup>
         <_ContentIncludedByDefault Remove="Components\Components\TemperatureVsFanSpeedGraph.razor"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app.css"/>
+        <_ContentIncludedByDefault Remove="wwwroot\favicon.png"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -44,6 +45,12 @@
         <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map"/>
         <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js"/>
         <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="wwwroot\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

@@ -77,6 +77,11 @@ public class AirVentShakerApiService(
     {
       app.UseExceptionHandler("/Error", createScopeForErrors: true);
     }
+
+    app.UseStaticFiles(new StaticFileOptions()
+    {
+      
+    });
     
     app.UseAntiforgery();
     app.MapStaticAssets();

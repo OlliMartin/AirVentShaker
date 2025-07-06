@@ -3,7 +3,9 @@
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-      "Microsoft.AspNetCore.Routing.EndpointMiddleware": "Warning"
+      "Microsoft.AspNetCore.Routing.EndpointMiddleware": "Warning",
+      "Microsoft.AspNetCore": "Debug",
+      "Oma.AirVentShaker.Api": "Debug"
     }
   },
   "Core": {

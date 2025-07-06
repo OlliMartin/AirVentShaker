@@ -1,0 +1,49 @@
+@using Oma.AirVentShaker.Api.Model
+
+@inject GlobalState globalState
+
+<div>
+    <Button class="button-up" Color="ButtonColor.Primary" @onclick="() => MoveTestStepUp(Item)"><Icon Name="IconName.CaretUp"/></Button>
+    <Button class="button-down" Color="ButtonColor.Primary" @onclick="() => MoveTestStepDown(Item)"><Icon Name="IconName.CaretDown"/></Button>
+    <Button Color="ButtonColor.Danger"><Icon Name="IconName.Trash" @onclick="() => RemoveTestStep(Item)"/></Button>
+</div>
+
+@code {
+    [Parameter]
+    public TestStep Item { get; set; }    
+    
+    private void MoveTestStepUp(TestStep testStep)
+    {
+        var prevNode = globalState.ActiveDefinition.Steps.Find(ts => ts.Order == testStep.Order - 1);
+
+        if (prevNode is not null)
+        {
+            (testStep.Order, prevNode.Order) = (prevNode.Order, testStep.Order);
+        }
+
+        globalState.ActiveDefinition.UpdateTestSteps(
+            globalState.ActiveDefinition.Steps.OrderBy(ts => ts.Order)
+        );
+    }
+
+    private void MoveTestStepDown(TestStep testStep)
+    {
+        var nextNode = globalState.ActiveDefinition.Steps.Find(ts => ts.Order == testStep.Order + 1);
+
+        if (nextNode is not null)
+        {
+            (testStep.Order, nextNode.Order) = (nextNode.Order, testStep.Order);
+        }
+
+        globalState.ActiveDefinition.UpdateTestSteps(
+            globalState.ActiveDefinition.Steps.OrderBy(ts => ts.Order)
+        );
+    }
+    
+    private void RemoveTestStep(TestStep testStep)
+    {
+        globalState.ActiveDefinition.UpdateTestSteps(
+            globalState.ActiveDefinition.Steps.Where(ts => ts.Equals(testStep) is false)
+        );
+    }
+}

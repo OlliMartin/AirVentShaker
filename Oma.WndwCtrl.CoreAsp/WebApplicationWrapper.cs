@@ -89,11 +89,14 @@ public class WebApplicationWrapper<TAssemblyDescriptor>(
     {
       throw new InvalidOperationException("Application is already running.");
     }
-
-    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+    
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions()
+    {
+      Args = args,
+    });
     Environment = builder.Environment;
     Configuration = builder.Configuration;
-
+    
     IConfiguration coreConfig = Configuration.GetSection("Core");
     ExtensionSettings extensions = [];
     coreConfig.GetSection(ExtensionSettings.SectionName).Bind(extensions);

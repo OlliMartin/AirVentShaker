@@ -1,73 +1,87 @@
 ﻿@page "/"
 @using Oma.AirVentShaker.Api.Model
+@using Oma.AirVentShaker.Api.Components.Components
 
 @inject NavigationManager navigationManager
+@inject GlobalState globalState
 
 <PageTitle>Home</PageTitle>
 
 <div class="container-fluid overflow-x-auto">
-    <div class="row">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Active</th>
-                <th>Frequency</th>
-                <th>Duration (s)</th>
-                <th>Target GForce</th>
-                <th>Amplitude</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            
-            <tbody>
-                @foreach (TestStep step in TestSteps.OrderBy(ts => ts.Order))
-                {
-                    <tr>
-                        <td>
-                            <CheckboxInput @bind-Value="@step.Active" />
-                        </td>
-                        <td>@step.Frequency</td>
-                        <td>@step.Duration.TotalSeconds</td>
-                        <td>@step.TargetGravitationalForce</td>
-                        <td>@step.Amplitude</td>
-                        
-                        <td>
-                            <div>
-                                <button type="button" @onclick="MakeCallback(step, MoveTestStepUp)">Up</button>
-                                <button type="button" @onclick="MakeCallback(step, MoveTestStepDown)">Down</button>
-                                <button type="button" @onclick="MakeCallback(step, RemoveTestStep)">Rem</button>
-                            </div>
-                        </td>
-                        
-                        @* <td> *@
-                        @*     <button type="button" @onclick="() => OnDeletePointClick(step)">Rem</button> *@
-                        @* </td> *@
-                    </tr>
-                }
+    <Grid
+        @ref="grid"
+        TItem="TestStep"
+        Class="table table-hover table-bordered table-striped"
+        DataProvider="TestStepDataProvider"
+        AllowFiltering="false"
+        AllowSelection="true"
+        Responsive="true"
+    >
+        @* <GridColumn TItem="TestStep" HeaderText="Active" PropertyName="Active"> *@
+        @*     @context.Active *@
+        @* </GridColumn> *@
 
-                <tr>
-                    <td/>
-                    <td>
-                        <InputNumber @bind-Value="@TestStepToAdd.Frequency"
-                                     min="5"
-                                     max="250"/>
-                    </td>
-                    <td>
-                        <InputNumber @bind-Value="@TestStepToAdd.DurationInSeconds"
-                                     min="1" max="300"/>
-                    </td>
-                    <td>
-                        <InputNumber @bind-Value="@TestStepToAdd.TargetGravitationalForce"
-                                     min="0" max="2"/>
-                    </td>
-                    <td />
-                    <td>
-                        <button type="button" @onclick="OnAddTestStep">Add</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <GridColumn TItem="TestStep" HeaderText="Frequency" PropertyName="Frequency">
+            @context.Frequency
+        </GridColumn>
+
+        <GridColumn TItem="TestStep" HeaderText="Duration" PropertyName="Duration">
+            @context.Duration
+        </GridColumn>
+
+        <GridColumn TItem="TestStep" HeaderText="TargetGravitationalForce" PropertyName="TargetGravitationalForce">
+            @context.TargetGravitationalForce
+        </GridColumn>
+
+        <GridColumn TItem="TestStep" HeaderText="Amplitude" PropertyName="Amplitude">
+            @context.Amplitude
+        </GridColumn>
+        
+        <GridColumn TItem="TestStep">
+            <TestStepButtons Item="@context"/>    
+        </GridColumn>
+        
+
+        @* <GridColumn TItem="TestStep" HeaderText="Active" PropertyName="Active"> *@
+        @*     @context.Active *@
+        @* </GridColumn> *@
+    </Grid>
+
+    <EditForm Model="TestStepToAdd" OnValidSubmit="OnAddTestStep" FormName="AddTestStep">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Frequency:</label>
+            <div class="col-md-10">
+                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.Frequency"
+                             min="5"
+                             max="250"/>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Duration (in S):</label>
+            <div class="col-md-10">
+                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.DurationInSeconds"
+                             min="1" max="300"/>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Target G-Force:</label>
+            <div class="col-md-10">
+                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.TargetGravitationalForce"
+                             min="0" max="2"/>
+            </div>
+        </div>
+
+
+        <button type="submit">Submit</button>
+        @* <td> *@
+        @*     <Button Color="ButtonColor.Primary" @onclick="OnAddTestStep"><Icon Name="IconName.Plus"/></Button> *@
+        @* </td> *@
+    </EditForm>
 
     <div class="row">
         <div class="col-md-12 text-right">
@@ -81,112 +95,27 @@
 </div>
 
 @code {
-    private List<TestStep> TestSteps = [];
     private TestStep TestStepToAdd { get; set; }= new();
-    
+    Grid<TestStep> grid = default!;
+
     protected override void OnInitialized()
     {
+        globalState.ActiveDefinition.OnChange += (_, _) => grid.RefreshDataAsync().GetAwaiter().GetResult();
         base.OnInitialized();
-
-        TestSteps.Add(
-            new TestStep()
-            {
-                Frequency = 10,
-                Duration = TimeSpan.FromSeconds(5),
-                TargetGravitationalForce = 0.3f,
-                Order = TestSteps.Count,
-            }
-        );
-        
-        TestSteps.Add(
-            new TestStep()
-            {
-                Frequency = 20,
-                Duration = TimeSpan.FromSeconds(5),
-                TargetGravitationalForce = 0.5f,
-                Order = TestSteps.Count,
-            }
-        );
-        
-        TestSteps.Add(
-            new TestStep()
-            {
-                Frequency = 30,
-                Duration = TimeSpan.FromSeconds(5),
-                TargetGravitationalForce = 0.8f,
-                Order = TestSteps.Count,
-            }
-        );
-        
-        TestSteps.Add(
-            new TestStep()
-            {
-                Frequency = 50,
-                Duration = TimeSpan.FromSeconds(5),
-                TargetGravitationalForce = 1.2f,
-                Order = TestSteps.Count,
-            }
-        );
     }
 
-    private Action MakeCallback(TestStep thisTestStep, Action<TestStep> action)
+    private async Task<GridDataProviderResult<TestStep>> TestStepDataProvider(GridDataProviderRequest<TestStep> request)
     {
-        return () => action(thisTestStep);
+        return await Task.FromResult(request.ApplyTo(globalState.ActiveDefinition.Steps));
     }
-    
-    private void MoveTestStepUp(TestStep testStep)
-    {
-        if (testStep.Order == 0)
-        {
-            return;
-        }
-        
-        var prevNode = TestSteps.Find(ts => ts.Order == testStep.Order - 1);
 
-        if (prevNode is not null)
-        {
-            prevNode.Order = testStep.Order + 1;
-        }
-        
-        testStep.Order -= 1;
-        
-        TestSteps = new(
-            TestSteps.OrderBy(ts => ts.Order)
-        );
-    }
-    
-    private void MoveTestStepDown(TestStep testStep)
-    {
-        if (testStep.Order == 0)
-        {
-            return;
-        }
-        
-        var nextNode = TestSteps.Find(ts => ts.Order == testStep.Order + 1);
-
-        if (nextNode is not null)
-        {
-            nextNode.Order = testStep.Order - 1;
-        }
-        
-        testStep.Order += 1;
-
-        TestSteps = new(
-            TestSteps.OrderBy(ts => ts.Order)
-        );
-    }
-    
-    private void RemoveTestStep(TestStep testStep)
-    {
-        TestSteps.Remove(testStep);
-    }
-    
     private void OnAddTestStep()
     {
-        TestStepToAdd.Order = TestSteps.Count;
-        TestSteps.Add(TestStepToAdd);
+        TestStepToAdd.Order = globalState.ActiveDefinition.Steps.Count;
+        globalState.ActiveDefinition.Steps.Add(TestStepToAdd);
         
+        grid.RefreshDataAsync().GetAwaiter().GetResult();
+
         TestStepToAdd = new();
     }
-
 }

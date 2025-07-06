@@ -65,3 +65,11 @@ h1:focus {
 .loading-progress-text:after {
     content: var(--blazor-load-percentage-text, "Loading");
 }
+
+.test-step-table-body .test-step-table-row:first-of-type .button-up {
+    visibility: hidden;
+}
+
+.test-step-table-body .test-step-table-row:last-of-type .button-down {
+    visibility: hidden;
+} 

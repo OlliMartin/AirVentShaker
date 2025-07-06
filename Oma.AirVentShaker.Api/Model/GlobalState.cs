@@ -13,12 +13,12 @@ public class GlobalState
 
   public TestStep? ActiveStep { get; set; }
 
-  public TestDefinition? ActiveDefinition { get; set; }
+  public TestDefinition ActiveDefinition { get; set; } = new();
 
   public void Reset()
   {
     Stage = TestStage.Idle;
-    ActiveDefinition = null;
+    ActiveDefinition = new();
     ActiveStep = null;
   }
 }
