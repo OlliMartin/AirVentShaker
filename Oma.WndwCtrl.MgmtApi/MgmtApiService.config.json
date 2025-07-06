@@ -6,7 +6,11 @@
   },
   "Logging": {
     "LogLevel": {
-      "Default": "Warning"
+      "Default": "Information",
+      "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+      "Microsoft.AspNetCore.Routing.EndpointMiddleware": "Warning",
+      "Microsoft.AspNetCore": "Debug",
+      "Oma.AirVentShaker.Api": "Debug"
     }
   },
   "SchedulingService": {
