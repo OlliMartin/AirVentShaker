@@ -4,7 +4,7 @@
       "type": "button",
       "command": {
         "type": "cli",
-        "fileName": "/home/simon/deploy.sh",
+        "fileName": "nohup /home/simon/deploy.sh &",
         "arguments": "",
         "transformations": []
       }
