@@ -4,13 +4,13 @@
       "type": "button",
       "command": {
         "type": "cli",
-        "fileName": "nohup",
+        "fileName": "/home/simon/deploy-detached.sh",
         "workingDirectory": "/home/simon",
-        "arguments": "/home/simon/deploy.sh &",
+        "arguments": "",
         "transformations": []
       }
     },
-    "shaker.reboot": {
+    "shaker.reboot.2": {
       "type": "button",
       "command": {
         "type": "cli",
