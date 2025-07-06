@@ -4,9 +4,9 @@
       "type": "button",
       "command": {
         "type": "cli",
-        "fileName": "nohup ./deploy.sh &",
+        "fileName": "nohup",
         "workingDirectory": "/home/simon",
-        "arguments": "",
+        "arguments": "./deploy.sh &",
         "transformations": []
       }
     },
