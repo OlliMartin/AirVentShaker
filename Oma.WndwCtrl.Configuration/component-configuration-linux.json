@@ -6,7 +6,7 @@
         "type": "cli",
         "fileName": "nohup",
         "workingDirectory": "/home/simon",
-        "arguments": "./deploy.sh &",
+        "arguments": "/home/simon/deploy.sh &",
         "transformations": []
       }
     },
