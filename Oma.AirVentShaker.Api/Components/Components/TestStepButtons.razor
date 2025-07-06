@@ -21,7 +21,7 @@
             (testStep.Order, prevNode.Order) = (prevNode.Order, testStep.Order);
         }
 
-        globalState.ActiveDefinition.UpdateTestSteps(
+        globalState.UpdateTestSteps(
             globalState.ActiveDefinition.Steps.OrderBy(ts => ts.Order)
         );
     }
@@ -35,15 +35,13 @@
             (testStep.Order, nextNode.Order) = (nextNode.Order, testStep.Order);
         }
 
-        globalState.ActiveDefinition.UpdateTestSteps(
+        globalState.UpdateTestSteps(
             globalState.ActiveDefinition.Steps.OrderBy(ts => ts.Order)
         );
     }
     
     private void RemoveTestStep(TestStep testStep)
     {
-        globalState.ActiveDefinition.UpdateTestSteps(
-            globalState.ActiveDefinition.Steps.Where(ts => ts.Equals(testStep) is false)
-        );
+        globalState.RemoveTestStep(testStep);
     }
 }

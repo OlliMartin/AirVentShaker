@@ -80,7 +80,7 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
 
     float scaled = devAverage * calc.DampeningFactor;
     float clamped = Math.Clamp(scaled, calc.MinDelta, calc.MaxDelta);
-
+    
     step.Amplitude += clamped;
 
     _logger.LogInformation(

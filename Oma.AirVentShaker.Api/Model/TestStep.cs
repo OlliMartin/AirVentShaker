@@ -10,6 +10,14 @@ public class TestStep
 
   public TimeSpan Duration { get; set; }
 
+  public TestDefinition? TestDefinition { get; set; }
+
+  public TestStep WithTestDefinition(TestDefinition testDefinition)
+  {
+    TestDefinition = testDefinition;
+    return this;
+  }
+  
   public int DurationInSeconds
   {
     get => (int)Duration.TotalSeconds;
@@ -19,6 +27,15 @@ public class TestStep
   public float TargetGravitationalForce { get; set; }
 
   public float Amplitude { get; set; } = 0.05f;
+  
+  public bool IsCalibrated { get; set; }
+
+  public string AmplitudeUi
+  {
+    get => IsCalibrated
+      ? Amplitude.ToString("d2")
+      : "?";
+  }
 
   public override string ToString() =>
     $"[{Order}] Freq={Frequency}Hz;Dur={Duration};Target={TargetGravitationalForce}G;CurrA={Amplitude}";

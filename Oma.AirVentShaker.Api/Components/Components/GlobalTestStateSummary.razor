@@ -1,0 +1,54 @@
+@using Oma.AirVentShaker.Api.Model
+
+@implements IDisposable
+@inject GlobalState globalState
+
+<Accordion @ref=accordion>
+    <AccordionItem Active="true">
+        <TitleTemplate>
+            <Icon Name="IconName.HouseFill" Class="me-1" /> Test State
+        </TitleTemplate>
+        <Content>
+            <div class="Row">
+                <div class="col-md-2">
+                    Status
+                </div>
+                <div class="col-md-10">
+                    @globalState.StageUi
+                </div>
+            </div>
+            
+            <div class="Row">
+                <div class="col-md-2">
+                    Active Test Steps
+                </div>
+                <div class="col-md-10">
+                    @globalState.ActiveSteps.Count
+                </div>
+            </div>
+        </Content>
+    </AccordionItem>
+</Accordion>
+
+@code {
+    private Accordion accordion = default!;
+    
+    protected override void OnInitialized()
+    {
+        globalState.OnChange += OnGlobalStateChange;
+        base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+        globalState.OnChange -= OnGlobalStateChange;
+    }
+
+    private void OnGlobalStateChange(object? _1, EventArgs _2)
+    {
+        InvokeAsync(StateHasChanged)
+            .ConfigureAwait(false)
+            .GetAwaiter()
+            .GetResult();
+    }
+}

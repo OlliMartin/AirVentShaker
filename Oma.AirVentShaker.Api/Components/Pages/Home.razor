@@ -2,106 +2,119 @@
 @using Oma.AirVentShaker.Api.Model
 @using Oma.AirVentShaker.Api.Components.Components
 
+@implements IDisposable
 @inject NavigationManager navigationManager
 @inject GlobalState globalState
 
 <PageTitle>Home</PageTitle>
 
-<div class="container-fluid overflow-x-auto">
-    <Grid
-        @ref="grid"
-        TItem="TestStep"
-        Class="table table-hover table-bordered table-striped"
-        DataProvider="TestStepDataProvider"
-        AllowFiltering="false"
-        AllowSelection="true"
-        Responsive="true"
-    >
-        @* <GridColumn TItem="TestStep" HeaderText="Active" PropertyName="Active"> *@
-        @*     @context.Active *@
-        @* </GridColumn> *@
+<div class="container-fluid overflow-x-auto home-container">
+    <div class="row">
+        <GlobalTestStateSummary/>    
+    </div>
+    
+    <div class="row">
+        <Grid
+            @ref="grid"
+            TItem="TestStep"
+            Class="table table-hover table-bordered table-striped test-step-table"
+            DataProvider="TestStepDataProvider"
+            AllowFiltering="false"
+            AllowSelection="true"
+            Responsive="true"
+            RowClass="GetRowClass">
+            @* <GridColumn TItem="TestStep" HeaderText="Active" PropertyName="Active"> *@
+            @*     @context.Active *@
+            @* </GridColumn> *@
 
-        <GridColumn TItem="TestStep" HeaderText="Frequency" PropertyName="Frequency">
-            @context.Frequency
-        </GridColumn>
+            <GridColumn TItem="TestStep" HeaderText="Frequency" PropertyName="Frequency">
+                @context.Frequency
+            </GridColumn>
 
-        <GridColumn TItem="TestStep" HeaderText="Duration" PropertyName="Duration">
-            @context.Duration
-        </GridColumn>
+            <GridColumn TItem="TestStep" HeaderText="Duration" PropertyName="Duration">
+                @context.Duration
+            </GridColumn>
 
-        <GridColumn TItem="TestStep" HeaderText="TargetGravitationalForce" PropertyName="TargetGravitationalForce">
-            @context.TargetGravitationalForce
-        </GridColumn>
+            <GridColumn TItem="TestStep" HeaderText="Target G-Force" PropertyName="TargetGravitationalForce">
+                @context.TargetGravitationalForce
+            </GridColumn>
 
-        <GridColumn TItem="TestStep" HeaderText="Amplitude" PropertyName="Amplitude">
-            @context.Amplitude
-        </GridColumn>
-        
-        <GridColumn TItem="TestStep">
-            <TestStepButtons Item="@context"/>    
-        </GridColumn>
-        
+            <GridColumn TItem="TestStep" HeaderText="Amplitude" PropertyName="Amplitude">
+                @context.AmplitudeUi
+            </GridColumn>
 
-        @* <GridColumn TItem="TestStep" HeaderText="Active" PropertyName="Active"> *@
-        @*     @context.Active *@
-        @* </GridColumn> *@
-    </Grid>
-
-    <EditForm Model="TestStepToAdd" OnValidSubmit="OnAddTestStep" FormName="AddTestStep">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
-
-        <div class="form-group row">
-            <label class="col-md-2 col-form-label">Frequency:</label>
-            <div class="col-md-10">
-                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.Frequency"
-                             min="5"
-                             max="250"/>
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label class="col-md-2 col-form-label">Duration (in S):</label>
-            <div class="col-md-10">
-                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.DurationInSeconds"
-                             min="1" max="300"/>
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label class="col-md-2 col-form-label">Target G-Force:</label>
-            <div class="col-md-10">
-                <InputNumber class="form-control" @bind-Value="@TestStepToAdd.TargetGravitationalForce"
-                             min="0" max="2"/>
-            </div>
-        </div>
-
-
-        <button type="submit">Submit</button>
-        @* <td> *@
-        @*     <Button Color="ButtonColor.Primary" @onclick="OnAddTestStep"><Icon Name="IconName.Plus"/></Button> *@
-        @* </td> *@
-    </EditForm>
+            <GridColumn TItem="TestStep">
+                <TestStepButtons Item="@context"/>
+            </GridColumn>
+        </Grid>
+    </div>
 
     <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit">Calibrate</button>
-        </div>
+        <EditForm class="col-md-4" Model="TestStepToAdd" OnValidSubmit="OnAddTestStep" FormName="AddTestStep">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
 
-        <div class="col-md-12 text-right">
-            <button type="submit">Submit</button>
+            <div class="form-group row">
+                <label class="col-md-4 col-form-label">Frequency:</label>
+                <div class="col-md-8">
+                    <InputNumber class="form-control" @bind-Value="@TestStepToAdd.Frequency"
+                                 min="5"
+                                 max="250"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-md-4 col-form-label">Duration (in S):</label>
+                <div class="col-md-8">
+                    <InputNumber class="form-control" @bind-Value="@TestStepToAdd.DurationInSeconds"
+                                 min="1" max="300"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-md-4 col-form-label">Target G-Force:</label>
+                <div class="col-md-8">
+                    <InputNumber class="form-control" @bind-Value="@TestStepToAdd.TargetGravitationalForce"
+                                 min="0" max="2"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Add</Button>
+                </div>
+            </div>
+        </EditForm>
+
+        <div class="col-md-6" />
+        
+        <div class="col-md-2">
+            <p>
+                <Button Color="ButtonColor.Primary">Calibrate</Button>
+                <Button Color="ButtonColor.Primary" Disabled="@globalState.CannotRunTest">Run!</Button>
+            </p>
         </div>
     </div>
 </div>
 
 @code {
-    private TestStep TestStepToAdd { get; set; }= new();
+    private TestStep TestStepToAdd { get; set; }= new()
+    {
+        Frequency = 200,
+        Duration = TimeSpan.FromSeconds(5),
+        TargetGravitationalForce = 0.5f
+    };
     Grid<TestStep> grid = default!;
 
     protected override void OnInitialized()
     {
-        globalState.ActiveDefinition.OnChange += (_, _) => grid.RefreshDataAsync().GetAwaiter().GetResult();
+        globalState.ActiveDefinition.OnChange += OnGlobalStateChange;
         base.OnInitialized();
+    }
+    
+    private void OnGlobalStateChange(object? o, EventArgs eventArgs)
+    {
+        grid.RefreshDataAsync().GetAwaiter().GetResult();
     }
 
     private async Task<GridDataProviderResult<TestStep>> TestStepDataProvider(GridDataProviderRequest<TestStep> request)
@@ -109,13 +122,24 @@
         return await Task.FromResult(request.ApplyTo(globalState.ActiveDefinition.Steps));
     }
 
+    private string GetRowClass(TestStep testStep) => $"test-step-table-row";
+    
     private void OnAddTestStep()
     {
         TestStepToAdd.Order = globalState.ActiveDefinition.Steps.Count;
-        globalState.ActiveDefinition.Steps.Add(TestStepToAdd);
         
-        grid.RefreshDataAsync().GetAwaiter().GetResult();
+        globalState.AddTestStep(TestStepToAdd);
 
-        TestStepToAdd = new();
+        TestStepToAdd = new()
+        {
+            Frequency = 200,
+            Duration = TimeSpan.FromSeconds(5),
+            TargetGravitationalForce = 0.5f
+        };
+    }
+
+    public void Dispose()
+    {
+        globalState.ActiveDefinition.OnChange -= OnGlobalStateChange;
     }
 }
