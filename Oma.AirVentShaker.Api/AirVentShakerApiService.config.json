@@ -1,4 +1,7 @@
 {
+  "Audio": {
+    "PlaybackDevice": "Speakers (Universal Audio Twin USB)"
+  },
   "Sensor": {
     "Io": {
       "Accelerometer": {

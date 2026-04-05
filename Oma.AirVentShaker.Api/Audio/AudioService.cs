@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Options;
 using Oma.AirVentShaker.Api.Interfaces;
 using Oma.AirVentShaker.Api.Model;
+using Oma.AirVentShaker.Api.Model.Settings;
 using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
@@ -18,7 +20,7 @@ public sealed class AudioService : IAudioService, IDisposable
 
   private CancellationTokenSource? _delayCancellationTokenSource;
 
-  public AudioService()
+  public AudioService(ILogger<AudioService> logger, IOptions<AudioSettings> audioOptions)
   {
     _audioEngine = new MiniAudioEngine();
     AudioFormat audioFormat = AudioFormat.Cd;
@@ -31,7 +33,17 @@ public sealed class AudioService : IAudioService, IDisposable
       Console.WriteLine($"Device: {device.Name}, IsDefault: {device.IsDefault}");
     }
     
-    _playbackDevice = _audioEngine.InitializePlaybackDevice(null, audioFormat);
+    var playbackDeviceName = audioOptions.Value.PlaybackDevice;
+    var matchedDevice = availableDevices
+      .Where(d => d.Name == playbackDeviceName)
+      .ToList();
+
+    if (matchedDevice.Count != 1)
+    {
+      throw new InvalidOperationException($"Could not locate specified device '{playbackDeviceName}'. Cannot proceed.");
+    }
+    
+    _playbackDevice = _audioEngine.InitializePlaybackDevice(matchedDevice.Single(), audioFormat);
     
     _oscillator = new Oscillator(_audioEngine, audioFormat)
       { Frequency = 50, Type = Oscillator.WaveformType.Sine, Amplitude = 0.2f, Enabled = false, };
