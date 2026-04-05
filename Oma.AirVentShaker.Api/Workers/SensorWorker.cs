@@ -62,6 +62,7 @@ public class SensorWorker(
 
       if (_active.Count >= batchSize)
       {
+        logger.LogInformation("Current sensor reading: {CurrentReading}. Batch size reached, queuing batch for export.", currentReading);
         await QueueBatchAsync();
       }
     }

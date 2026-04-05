@@ -1,10 +1,12 @@
 ﻿@page "/"
 @using Oma.AirVentShaker.Api.Model
 @using Oma.AirVentShaker.Api.Components.Components
+@using Oma.AirVentShaker.Api.Interfaces
 
 @implements IDisposable
 @inject NavigationManager navigationManager
 @inject GlobalState globalState
+@inject ITestRunner testRunner
 
 <PageTitle>Home</PageTitle>
 
@@ -90,7 +92,7 @@
         
         <div class="col-md-2">
             <p>
-                <Button Color="ButtonColor.Primary">Calibrate</Button>
+                <Button @onclick="Calibrate" Color="ButtonColor.Primary">Calibrate</Button>
                 <Button Color="ButtonColor.Primary" Disabled="@globalState.CannotRunTest">Run!</Button>
             </p>
         </div>
@@ -141,5 +143,10 @@
     public void Dispose()
     {
         globalState.ActiveDefinition.OnChange -= OnGlobalStateChange;
+    }
+
+    public async Task Calibrate()
+    {
+        await testRunner.ExecuteAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None)
     }
 }
