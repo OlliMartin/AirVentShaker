@@ -57,7 +57,7 @@ public class HighResSensorWorker(
           await QueueBatchAsync();
         }
 
-        await Task.Delay(TimeSpan.FromMicroseconds(microseconds: 100));
+        await Task.Delay(TimeSpan.FromMicroseconds(microseconds: 1000));
       }
       catch (Exception ex)
       {
