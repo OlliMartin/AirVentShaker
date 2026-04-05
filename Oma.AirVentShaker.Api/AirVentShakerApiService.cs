@@ -51,8 +51,8 @@ public class AirVentShakerApiService(
       .UseMessageBus(_messageBusAccessor)
       .AddMessageConsumer<TimeSeriesPersistorMessageConsumer, GForceValueBatchEvent>()
       .AddMessageConsumer<AmplitudeAdjustingMessageConsumer, GForceValueBatchEvent>()
-      //.AddHostedService<SensorWorker>()
-      .AddHostedService<HighResSensorWorker>()
+      .AddHostedService<SensorWorker>()
+      //.AddHostedService<HighResSensorWorker>()
       .AddSingleton<ITestRunner, DummyTestRunner>()
       .AddSingleton<IAudioService, AudioService>();
 
