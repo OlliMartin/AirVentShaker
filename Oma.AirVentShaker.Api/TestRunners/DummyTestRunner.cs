@@ -42,6 +42,8 @@ public class DummyTestRunner(
       await Task.Delay(testStep.Duration, cancelToken);
     }
 
+    globalState.Stage = TestStage.Calibrated;
+    
     // globalState.Reset();
 
     return new TestSummary()
