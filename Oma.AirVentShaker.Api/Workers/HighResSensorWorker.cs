@@ -42,7 +42,7 @@ public class HighResSensorWorker(
   {
     int batchSize = sensorOptions.Value.BatchSize;
 
-    await Task.Delay(TimeSpan.FromSeconds(seconds: 7));
+    await Task.Delay(TimeSpan.FromSeconds(seconds: 11));
     logger.LogInformation("Starting to read sensor values.");
 
     while (_isRunning)
