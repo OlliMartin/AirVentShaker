@@ -26,7 +26,7 @@ public class TestStep
 
   public float TargetGravitationalForce { get; set; }
 
-  public float Amplitude { get; set; } = 0.05f;
+  public float Amplitude { get; set; } = 0.5f;
   
   public bool IsCalibrated { get; set; }
 
