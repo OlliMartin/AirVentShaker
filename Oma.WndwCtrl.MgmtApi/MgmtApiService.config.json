@@ -23,7 +23,6 @@
   "Core": {
     "Extensions": [
       {
-        "AssemblyName": "Z:\\git\\wndw.ctl\\Oma.WndwCtrl.Extensions\\Windows\\Oma.WndwCtrl.Ext.Windows.Media\\bin\\Debug\\net9.0\\Oma.WndwCtrl.Ext.Windows.Media.dll"
       }
     ],
     "CliParser": {
