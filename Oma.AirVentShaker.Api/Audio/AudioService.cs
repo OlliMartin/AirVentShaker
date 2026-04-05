@@ -31,6 +31,8 @@ public sealed class AudioService : IAudioService, IDisposable
     logger.LogInformation("Available playback devices:");
     foreach(var device in availableDevices)
     {
+      Console.WriteLine("\tDevice: {0}, IsDefault: {1}", device.Name, device.IsDefault);
+      
       logger.LogInformation(
         "\tDevice: {DeviceName}, IsDefault: {IsDefault}",
         device.Name,
