@@ -11,7 +11,8 @@
       "Microsoft.AspNetCore.Routing.EndpointMiddleware": "Warning",
       "Microsoft.AspNetCore": "Debug",
       "Oma.AirVentShaker.Api": "Debug",
-      "Microsoft.AspNetCore.Components": "Warning"
+      "Microsoft.AspNetCore.Components": "Warning",
+      "Microsoft.AspNetCore.SignalR": "Warning"
     }
   },
   "SchedulingService": {
