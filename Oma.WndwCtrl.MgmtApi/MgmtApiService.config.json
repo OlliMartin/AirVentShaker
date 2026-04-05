@@ -58,7 +58,7 @@
     "Kestrel": {
       "Endpoints": {
         "Http": {
-          "Url": "http://localhost:1337"
+          "Url": "http://0.0.0.0:1337"
         }
       }
     }
