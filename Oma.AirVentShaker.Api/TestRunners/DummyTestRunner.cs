@@ -25,13 +25,15 @@ public class DummyTestRunner(
         testStep.Frequency, 
         testStep.Duration.TotalMilliseconds);
       
+      logger.LogDebug("Current amplitude is {Amplitude}", testStep.Amplitude);
+      
       globalState.ActiveStep = testStep;
 
       await audioService.PlayAsync(
         new SineWaveDescriptor()
         {
           Frequency = testStep.Frequency,
-          Amplitude = testStep.Amplitude,
+          Amplitude = testStep.Amplitude == 0f ? 0.5f : testStep.Amplitude,
         },
         testStep.Duration + TimeSpan.FromMilliseconds(milliseconds: 500),
         cancelToken
