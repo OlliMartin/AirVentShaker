@@ -4,6 +4,7 @@ using SoundFlow.Abstracts;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
 using SoundFlow.Enums;
+using SoundFlow.Structs;
 
 namespace Oma.AirVentShaker.Api.Audio;
 
@@ -12,17 +13,19 @@ public sealed class AudioService : IAudioService, IDisposable
   private readonly AudioEngine _audioEngine;
   private readonly SemaphoreSlim _mutex = new(initialCount: 1);
   private readonly Oscillator _oscillator;
+  private readonly Mixer _mixer;
 
   private CancellationTokenSource? _delayCancellationTokenSource;
 
   public AudioService()
   {
-    _audioEngine = new MiniAudioEngine(sampleRate: 44100, Capability.Playback);
-
-    _oscillator = new Oscillator()
+    _audioEngine = new MiniAudioEngine();
+    AudioFormat audioFormat = AudioFormat.Cd;
+    
+    _oscillator = new Oscillator(_audioEngine, audioFormat)
       { Frequency = 50, Type = Oscillator.WaveformType.Sine, Amplitude = 0.2f, Enabled = false, };
 
-    Mixer.Master.AddComponent(_oscillator);
+    _mixer = new Mixer(_audioEngine, audioFormat, isMasterMixer: true);
   }
 
   public async Task PlayAsync(
@@ -88,6 +91,7 @@ public sealed class AudioService : IAudioService, IDisposable
   public void Dispose()
   {
     _delayCancellationTokenSource?.Dispose();
+    _mixer.Dispose();
     _audioEngine.Dispose();
   }
 
@@ -114,7 +118,7 @@ public sealed class AudioService : IAudioService, IDisposable
 
   private void AdjustOscillator(IWaveDescriptor waveDescriptor)
   {
-    Mixer.Master.RemoveComponent(_oscillator);
+    _mixer.RemoveComponent(_oscillator);
 
     if (waveDescriptor is SineWaveDescriptor sineDescriptor)
     {
@@ -131,6 +135,6 @@ public sealed class AudioService : IAudioService, IDisposable
     _oscillator.Amplitude = waveDescriptor.Amplitude;
 
     _oscillator.Enabled = true;
-    Mixer.Master.AddComponent(_oscillator);
+    _mixer.AddComponent(_oscillator);
   }
 }
