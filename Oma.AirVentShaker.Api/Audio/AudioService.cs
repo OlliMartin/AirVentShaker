@@ -25,16 +25,20 @@ public sealed class AudioService : IAudioService, IDisposable
     _audioEngine = new MiniAudioEngine();
     AudioFormat audioFormat = AudioFormat.Cd;
 
-    var availableDevices = _audioEngine
+    DeviceInfo[] availableDevices = _audioEngine
       .PlaybackDevices;
     
+    logger.LogInformation("Available playback devices:");
     foreach(var device in availableDevices)
     {
-      Console.WriteLine($"Device: {device.Name}, IsDefault: {device.IsDefault}");
+      logger.LogInformation(
+        "\tDevice: {DeviceName}, IsDefault: {IsDefault}",
+        device.Name,
+        device.IsDefault);
     }
     
-    var playbackDeviceName = audioOptions.Value.PlaybackDevice;
-    var matchedDevice = availableDevices
+    string playbackDeviceName = audioOptions.Value.PlaybackDevice;
+    List<DeviceInfo> matchedDevice = availableDevices
       .Where(d => d.Name == playbackDeviceName)
       .ToList();
 
@@ -42,13 +46,23 @@ public sealed class AudioService : IAudioService, IDisposable
     {
       throw new InvalidOperationException($"Could not locate specified device '{playbackDeviceName}'. Cannot proceed.");
     }
+
+    DeviceInfo selectedDevice = matchedDevice.Single();
     
-    _playbackDevice = _audioEngine.InitializePlaybackDevice(matchedDevice.Single(), audioFormat);
+    logger.LogInformation("Initializing device {DeviceName} with id: {DeviceId}.", selectedDevice.Name, selectedDevice.Id);
+    
+    _playbackDevice = _audioEngine.InitializePlaybackDevice(selectedDevice, audioFormat);
+    
+    logger.LogInformation("Creating oscillator.");
     
     _oscillator = new Oscillator(_audioEngine, audioFormat)
       { Frequency = 50, Type = Oscillator.WaveformType.Sine, Amplitude = 0.2f, Enabled = false, };
     
+    logger.LogInformation("Adding oscillator to master mix.");
+    
     _playbackDevice.MasterMixer.AddComponent(_oscillator);
+    
+    logger.LogInformation("Starting playback device.");
     _playbackDevice.Start();
   }
 
