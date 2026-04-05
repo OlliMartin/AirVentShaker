@@ -147,6 +147,6 @@
 
     public async Task Calibrate()
     {
-        await testRunner.ExecuteAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None)
+        await testRunner.ExecuteAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None);
     }
 }
