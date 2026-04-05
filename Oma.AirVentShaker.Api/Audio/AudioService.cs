@@ -22,8 +22,14 @@ public sealed class AudioService : IAudioService, IDisposable
   {
     _audioEngine = new MiniAudioEngine();
     AudioFormat audioFormat = AudioFormat.Cd;
+
+    var availableDevices = _audioEngine
+      .PlaybackDevices;
     
-    var deviceToUse = _audioEngine.PlaybackDevices.FirstOrDefault();
+    foreach(var device in availableDevices)
+    {
+      Console.WriteLine($"Device: {device.Name}, IsDefault: {device.IsDefault}");
+    }
     
     _playbackDevice = _audioEngine.InitializePlaybackDevice(null, audioFormat);
     
