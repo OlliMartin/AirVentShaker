@@ -16,24 +16,7 @@ public class TestDefinition
 
   public void AfterInit()
   {
-    _globalState.AddTestStep(
-        new()
-        {
-          Frequency = 10,
-          Duration = TimeSpan.FromSeconds(5),
-          TargetGravitationalForce = 0.3f,
-          Order = 0,
-        }
-      )
-      .AddTestStep(
-        new()
-        {
-          Frequency = 20,
-          Duration = TimeSpan.FromSeconds(5),
-          TargetGravitationalForce = 0.3f,
-          Order = 1,
-        }
-      )
+    _globalState
       .AddTestStep(
         new()
         {

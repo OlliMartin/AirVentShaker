@@ -18,6 +18,13 @@ public class DummyTestRunner(
     
     foreach (TestStep testStep in testDefinition.Steps.Where(s => s.Active))
     {
+      logger.LogInformation(
+        "Processing step {StepOrder} | Target GForce: {GForce} with frequency {Frequency}Hz and duration {Duration}ms", 
+        testStep.Order, 
+        testStep.TargetGravitationalForce, 
+        testStep.Frequency, 
+        testStep.Duration.TotalMilliseconds);
+      
       globalState.ActiveStep = testStep;
 
       await audioService.PlayAsync(
