@@ -84,7 +84,7 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
     TimeSpan duration = TimeSpan.FromSeconds(seconds: 5);
     TimeSpan interval = TimeSpan.FromMilliseconds(10);
 
-    await Task.Delay(TimeSpan.FromSeconds(seconds: 1), cancelToken);
+    await Task.Delay(TimeSpan.FromSeconds(seconds: 3), cancelToken);
 
     List<Vector3> measurements = new();
 
