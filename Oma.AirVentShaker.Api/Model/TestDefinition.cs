@@ -21,18 +21,18 @@ public class TestDefinition
         new()
         {
           Frequency = 40,
-          Duration = TimeSpan.FromSeconds(5),
+          Duration = TimeSpan.FromSeconds(15),
           TargetGravitationalForce = 0.3f,
-          Order = 2,
+          Order = 1,
         }
       )
       .AddTestStep(
         new()
         {
           Frequency = 50,
-          Duration = TimeSpan.FromSeconds(5),
+          Duration = TimeSpan.FromSeconds(15),
           TargetGravitationalForce = 0.3f,
-          Order = 3,
+          Order = 2,
         }
       );
   }

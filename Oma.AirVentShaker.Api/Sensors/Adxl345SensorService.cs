@@ -82,7 +82,7 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
   private async Task CalibrateSensorAsync(CancellationToken cancelToken = default)
   {
     TimeSpan duration = TimeSpan.FromSeconds(seconds: 5);
-    TimeSpan interval = TimeSpan.FromMilliseconds(milliseconds: 10);
+    TimeSpan interval = TimeSpan.FromMicroseconds(microseconds: 10);
 
     await Task.Delay(TimeSpan.FromSeconds(seconds: 1), cancelToken);
 
