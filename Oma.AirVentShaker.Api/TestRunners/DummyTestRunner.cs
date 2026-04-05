@@ -3,7 +3,10 @@ using Oma.AirVentShaker.Api.Model;
 
 namespace Oma.AirVentShaker.Api.TestRunners;
 
-public class DummyTestRunner(GlobalState globalState, IAudioService audioService) : ITestRunner
+public class DummyTestRunner(
+  ILogger<DummyTestRunner> logger,
+  GlobalState globalState, 
+  IAudioService audioService) : ITestRunner
 {
   public async Task<TestSummary> ExecuteAsync(TestDefinition testDefinition, CancellationToken cancelToken)
   {
@@ -11,6 +14,8 @@ public class DummyTestRunner(GlobalState globalState, IAudioService audioService
     globalState.ActiveDefinition = testDefinition;
     globalState.Stage = TestStage.Calibrate;
 
+    logger.LogInformation("Starting test {TestName} with id {TestId}", testDefinition.Name, testId);
+    
     foreach (TestStep testStep in testDefinition.Steps.Where(s => s.Active))
     {
       globalState.ActiveStep = testStep;
@@ -28,7 +33,7 @@ public class DummyTestRunner(GlobalState globalState, IAudioService audioService
       await Task.Delay(testStep.Duration, cancelToken);
     }
 
-    globalState.Reset();
+    // globalState.Reset();
 
     return new TestSummary()
     {
