@@ -87,7 +87,7 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
     await Task.Delay(TimeSpan.FromSeconds(seconds: 5), cancelToken);
 
     List<Vector3> measurements = new();
-
+    
     for (int i = 0; i < duration.TotalMilliseconds / interval.TotalMilliseconds; i++)
     {
       measurements.Add(_sensor.Acceleration);
@@ -97,9 +97,24 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
     int count = measurements.Count;
     int trimCount = (int)(count * 0.05);
 
+    float minXBefore = measurements.Min(v => v.X);
+    float minYBefore = measurements.Min(v => v.Y);
+    float minZBefore = measurements.Min(v => v.Z);
+
     var sortedX = measurements.Select(v => v.X).OrderBy(x => x).Skip(trimCount).Take(count - 2 * trimCount).ToList();
     var sortedY = measurements.Select(v => v.Y).OrderBy(y => y).Skip(trimCount).Take(count - 2 * trimCount).ToList();
     var sortedZ = measurements.Select(v => v.Z).OrderBy(z => z).Skip(trimCount).Take(count - 2 * trimCount).ToList();
+
+    float minXAfter = sortedX.Min();
+    float minYAfter = sortedY.Min();
+    float minZAfter = sortedZ.Min();
+
+    _logger.LogInformation(
+      "Min values before/after trim (X/Y/Z): [{beforeX}/{afterX} {beforeY}/{afterY} {beforeZ}/{afterZ}]",
+      minXBefore, minXAfter,
+      minYBefore, minYAfter,
+      minZBefore, minZAfter
+    );
 
     _baselineAcc = new Vector3(
       sortedX.Average(),
