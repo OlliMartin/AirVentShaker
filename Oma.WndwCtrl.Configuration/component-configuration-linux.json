@@ -10,7 +10,7 @@
         "transformations": []
       }
     },
-    "shaker.reboot.2": {
+    "shaker.reboot.3": {
       "type": "button",
       "command": {
         "type": "cli",
