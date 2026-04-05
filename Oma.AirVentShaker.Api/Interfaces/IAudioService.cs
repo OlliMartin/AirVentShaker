@@ -9,4 +9,6 @@ public interface IAudioService
   Task StopAsync(CancellationToken cancelToken);
 
   Task UpdateAmplitudeAsync(float newVal, CancellationToken cancelToken);
+  
+  float LastAmplitude { get; }
 }

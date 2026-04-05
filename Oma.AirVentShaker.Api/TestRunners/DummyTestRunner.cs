@@ -40,6 +40,9 @@ public class DummyTestRunner(
       );
 
       await Task.Delay(testStep.Duration, cancelToken);
+
+      testStep.IsCalibrated = true;
+      testStep.Amplitude = audioService.LastAmplitude;
     }
 
     globalState.Stage = TestStage.Calibrated;

@@ -121,6 +121,7 @@ public sealed class AudioService : IAudioService, IDisposable
     try
     {
       await _mutex.WaitAsync(cancelToken);
+      _lastAmplitude = newVal;
 
       _oscillator.Amplitude = newVal;
     }
@@ -129,6 +130,9 @@ public sealed class AudioService : IAudioService, IDisposable
       _mutex.Release();
     }
   }
+
+  private float _lastAmplitude;
+  public float LastAmplitude => _lastAmplitude;
 
   public void Dispose()
   {
