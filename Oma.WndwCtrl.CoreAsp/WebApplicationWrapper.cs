@@ -278,7 +278,8 @@ public class WebApplicationWrapper<TAssemblyDescriptor>(
       );
     }
 
-    return configurationBuilder;
+    return configurationBuilder
+      .AddEnvironmentVariables();
   }
 
   [PublicAPI]
