@@ -1,6 +1,7 @@
 using Oma.AirVentShaker.Api.Interfaces;
 using Oma.AirVentShaker.Api.Model;
 using SoundFlow.Abstracts;
+using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
 using SoundFlow.Enums;
@@ -13,7 +14,7 @@ public sealed class AudioService : IAudioService, IDisposable
   private readonly AudioEngine _audioEngine;
   private readonly SemaphoreSlim _mutex = new(initialCount: 1);
   private readonly Oscillator _oscillator;
-  private readonly Mixer _mixer;
+  private readonly AudioPlaybackDevice _playbackDevice;
 
   private CancellationTokenSource? _delayCancellationTokenSource;
 
@@ -22,10 +23,15 @@ public sealed class AudioService : IAudioService, IDisposable
     _audioEngine = new MiniAudioEngine();
     AudioFormat audioFormat = AudioFormat.Cd;
     
+    var deviceToUse = _audioEngine.PlaybackDevices.FirstOrDefault();
+    
+    _playbackDevice = _audioEngine.InitializePlaybackDevice(null, audioFormat);
+    
     _oscillator = new Oscillator(_audioEngine, audioFormat)
       { Frequency = 50, Type = Oscillator.WaveformType.Sine, Amplitude = 0.2f, Enabled = false, };
-
-    _mixer = new Mixer(_audioEngine, audioFormat, isMasterMixer: true);
+    
+    _playbackDevice.MasterMixer.AddComponent(_oscillator);
+    _playbackDevice.Start();
   }
 
   public async Task PlayAsync(
@@ -90,8 +96,10 @@ public sealed class AudioService : IAudioService, IDisposable
 
   public void Dispose()
   {
+    _playbackDevice.Stop();
+    
     _delayCancellationTokenSource?.Dispose();
-    _mixer.Dispose();
+    _playbackDevice.Dispose();
     _audioEngine.Dispose();
   }
 
@@ -118,7 +126,7 @@ public sealed class AudioService : IAudioService, IDisposable
 
   private void AdjustOscillator(IWaveDescriptor waveDescriptor)
   {
-    _mixer.RemoveComponent(_oscillator);
+    _playbackDevice.MasterMixer.RemoveComponent(_oscillator);
 
     if (waveDescriptor is SineWaveDescriptor sineDescriptor)
     {
@@ -135,6 +143,6 @@ public sealed class AudioService : IAudioService, IDisposable
     _oscillator.Amplitude = waveDescriptor.Amplitude;
 
     _oscillator.Enabled = true;
-    _mixer.AddComponent(_oscillator);
+    _playbackDevice.MasterMixer.AddComponent(_oscillator);
   }
 }

@@ -21,10 +21,7 @@
     "Enabled": false
   },
   "Core": {
-    "Extensions": [
-      {
-      }
-    ],
+    "Extensions": [ ],
     "CliParser": {
       "Silent": true
     }
