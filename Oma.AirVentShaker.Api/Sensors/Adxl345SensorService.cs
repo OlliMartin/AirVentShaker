@@ -94,18 +94,26 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
       await Task.Delay(interval, cancelToken);
     }
 
+    int count = measurements.Count;
+    int trimCount = (int)(count * 0.05);
+
+    var sortedX = measurements.Select(v => v.X).OrderBy(x => x).Skip(trimCount).Take(count - 2 * trimCount).ToList();
+    var sortedY = measurements.Select(v => v.Y).OrderBy(y => y).Skip(trimCount).Take(count - 2 * trimCount).ToList();
+    var sortedZ = measurements.Select(v => v.Z).OrderBy(z => z).Skip(trimCount).Take(count - 2 * trimCount).ToList();
+
     _baselineAcc = new Vector3(
-      measurements.Average(v => v.X),
-      measurements.Average(v => v.Y),
-      measurements.Average(v => v.Z)
+      sortedX.Average(),
+      sortedY.Average(),
+      sortedZ.Average()
     );
 
     _logger.LogInformation(
-      "Determined baseline vector for acceleration: [{X} {Y} {Z}] over {cnt} values",
+      "Determined baseline vector for acceleration: [{X} {Y} {Z}] over {cnt} values (trimmed {trim} top/bottom 5%)",
       _baselineAcc.Value.X,
       _baselineAcc.Value.Y,
       _baselineAcc.Value.Z,
-      measurements.Count
+      measurements.Count,
+      trimCount
     );
   }
 }
