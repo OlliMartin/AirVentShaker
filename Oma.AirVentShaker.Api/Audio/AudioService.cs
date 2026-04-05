@@ -66,6 +66,8 @@ public sealed class AudioService : IAudioService, IDisposable
     
     logger.LogInformation("Starting playback device.");
     _playbackDevice.Start();
+    
+    logger.LogInformation("Started playback device. Init done.");
   }
 
   public async Task PlayAsync(
