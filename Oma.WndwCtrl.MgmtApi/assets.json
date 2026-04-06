@@ -19,6 +19,10 @@
     {
       "url": "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css",
       "dest": "wwwroot/lib/prism/prism-tomorrow.min.css"
+    },
+    {
+      "url": "https://demos.blazorbootstrap.com/images/logo/logo-white.svg",
+      "dest": "wwwroot/lib/icon/logo-white.svg"
     }
   ],
   "js": [
