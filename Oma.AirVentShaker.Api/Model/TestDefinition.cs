@@ -31,7 +31,7 @@ public class TestDefinition
         {
           Frequency = 50,
           Duration = TimeSpan.FromSeconds(15),
-          TargetGravitationalForce = 0.3f,
+          TargetGravitationalForce = 0.5f,
           Order = 2,
         }
       );
