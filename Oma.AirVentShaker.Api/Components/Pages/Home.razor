@@ -30,7 +30,9 @@
             @* </GridColumn> *@
 
             <GridColumn TItem="TestStep" HeaderText="Frequency" PropertyName="Frequency">
-                @context.Frequency
+                <InputNumber class="form-control" @bind-Value="@context.Frequency"
+                             min="5"
+                             max="120"/>
             </GridColumn>
 
             <GridColumn TItem="TestStep" HeaderText="Duration" PropertyName="Duration">
@@ -46,7 +48,9 @@
             </GridColumn>
             
             <GridColumn TItem="TestStep" HeaderText="Amplitude" PropertyName="Amplitude">
-                @context.AmplitudeUi
+                <InputNumber class="form-control" @bind-Value="@context.Amplitude"
+                             min="0"
+                             max="1"/>
             </GridColumn>
 
             <GridColumn TItem="TestStep">
