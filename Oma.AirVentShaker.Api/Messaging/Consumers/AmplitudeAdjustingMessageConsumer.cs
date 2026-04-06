@@ -107,7 +107,7 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
       clamped,
       devAverage,
       count,
-      measurements.Count - count
+      measurements.Count - filteredMeasurements.Count
     );
 
     await _messageBusWriter.SendAsync(new GForceAggregatedMeasurementEvent(measureAverage), cancelToken);
