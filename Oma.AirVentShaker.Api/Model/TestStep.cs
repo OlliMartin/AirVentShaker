@@ -59,9 +59,9 @@ public class TestStep
 
   public string AmplitudeUi
   {
-    get => IsCalibrated
-      ? Amplitude.ToString("F5")
-      : "?";
+    get => Amplitude.ToString("F5") + (IsCalibrated
+      ? " ??"
+      : "");
   }
 
   public override string ToString() =>
