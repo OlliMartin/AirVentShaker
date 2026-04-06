@@ -12,6 +12,8 @@
   },
   "Influx": {
     "Url": "http://influx.mon.acaad.dev:8086",
-    "Token": ""
+    "Token": "",
+    "Bucket": "airvents",
+    "Org": "ollimart.in"
   }
 }

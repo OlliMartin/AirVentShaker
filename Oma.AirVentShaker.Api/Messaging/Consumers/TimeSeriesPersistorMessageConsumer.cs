@@ -17,6 +17,7 @@ public sealed class TimeSeriesPersistorMessageConsumer : IMessageConsumer<GForce
 
   private readonly ILogger<TimeSeriesPersistorMessageConsumer> _logger;
   private readonly GlobalState _globalState;
+  private readonly InfluxSettings _influxSettings;
 
   public TimeSeriesPersistorMessageConsumer(
     ILogger<TimeSeriesPersistorMessageConsumer> logger,
@@ -26,11 +27,11 @@ public sealed class TimeSeriesPersistorMessageConsumer : IMessageConsumer<GForce
     _logger = logger;
     _globalState = globalState;
 
-    InfluxSettings influxSettings = influxOptions.Value;
+    _influxSettings = influxOptions.Value;
     
     _influx = new(
-      influxSettings.Url,
-      influxSettings.Token
+      _influxSettings.Url,
+      _influxSettings.Token
     );
   }
 
@@ -83,6 +84,6 @@ public sealed class TimeSeriesPersistorMessageConsumer : IMessageConsumer<GForce
         .Tag("test-name", dp.TestDefinition?.Name ?? "None")
     ).ToList();
 
-    await writeApi.WritePointsAsync(points, "airvents", "ollimart.in", cancelToken);
+    await writeApi.WritePointsAsync(points, _influxSettings.Bucket, _influxSettings.Org, cancelToken);
   }
 }
