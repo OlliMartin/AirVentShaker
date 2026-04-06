@@ -22,15 +22,25 @@
     >> Note: The raspberry PI hosts its own DNS server, resolving `shaker.local` to the gateway IP adress of the wifi hotspot/access point.
     >> If the raspberry PI is access via the lan port, then the IP adress is assigned by the respective router and **not** `192.168.1.1`.
     
-    ### Deployment
+    ## Deployment
     
     In the admins home folder is a script called `deploy.sh`. It will pull the latest source code from the github 
     repository, build and publish the application and restart the systemd service.
     
-    If the source code is moved - **be aware of the [AGPL license](https://github.com/ACaaD/acaad.ctrl.svc?tab=AGPL-3.0-1-ov-file) 
-    of the downstream dependency [ACaaD](https://github.com/ACaaD) (!)** - this is the place that must be adjusted.
+    If the source code is moved - **be aware of the [AGPL license](https://github.com/ACaaD/acaad.ctrl.svc?tab=AGPL-3.0-1-ov-file) of the downstream dependency [ACaaD](https://github.com/ACaaD) (!)** - this is the place that must be adjusted.
     
-    ### File Locations
+    Assuming the raspi is connected to the internet, you can run a deployment by executing:
+    
+    ```sh
+    ssh admin@shaker.local
+    # Use password 'admin' if unchanged.
+    cd ~
+    ./deploy.sh
+    ```
+    
+    The process takes between 30 and 60 seconds.
+    
+    ## File Locations
     
     The following list shows important file locations on the Raspberry PI. Basic understanding of Linux is assumed.
     
@@ -40,12 +50,14 @@
     | App Secrets | `/etc/shaker/secrets` | App configuration, Influx credentials |
     | OtelCol Config | `/etc/otelcol/config.yaml` | OpenTelemetry Collector configuration file. |
     
-    ### InfluxDB Credentials
+    
+    ## InfluxDB Credentials
     
     The app writes measured GForces (and baseline data/metadata) to an `InfluxDB` instance hosted on the Raspberry PI.
     
     The Influx UI can visualize this data. The following credentials are used at the time of writing:
     
+    **Host:** [`http://shaker.local:8086`](http://shaker.local:8086)
     **Username:** `admin`
     **Password:** `adminadmin`
     **Token:** `@influxOptions.Value.Token`

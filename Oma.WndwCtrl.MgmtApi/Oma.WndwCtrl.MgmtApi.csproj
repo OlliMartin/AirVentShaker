@@ -25,4 +25,13 @@
         <ProjectReference Include="..\Oma.WndwCtrl.Scheduling\Oma.WndwCtrl.Scheduling.csproj"/>
     </ItemGroup>
 
+    <Target Name="DownloadAssets" BeforeTargets="ComputeFilesToPublish">
+        <Exec Command="pwsh -File build/download-assets.ps1"
+              Condition="'$(OS)' != 'Windows_NT'"
+              StandardOutputImportance="Low" />
+        <Exec Command="powershell -File build/download-assets.ps1"
+              Condition="'$(OS)' == 'Windows_NT'"
+              StandardOutputImportance="Low" />
+    </Target>
+    
 </Project>
