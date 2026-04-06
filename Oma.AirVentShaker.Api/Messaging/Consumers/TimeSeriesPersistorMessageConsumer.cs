@@ -39,7 +39,7 @@ public sealed class TimeSeriesPersistorMessageConsumer(
 
   public async Task OnMessageAsync(GForceValueBatchEvent message, CancellationToken cancelToken = default)
   {
-    if(globalState.Stage is not TestStage.Calibrate and TestStage.Run)
+    if(globalState.Stage is not TestStage.Calibrate and not TestStage.Run)
     {
       return;
     }

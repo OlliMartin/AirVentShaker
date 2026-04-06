@@ -47,8 +47,6 @@ public class DummyTestRunner(
 
     globalState.Stage = TestStage.Calibrated;
     
-    // globalState.Reset();
-
     return new TestSummary()
     {
       Id = testId,
