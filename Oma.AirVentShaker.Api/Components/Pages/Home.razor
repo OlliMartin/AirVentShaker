@@ -135,7 +135,7 @@
     
     private void OnAddTestStep()
     {
-        TestStepToAdd.Order = globalState.ActiveDefinition.Steps.Count;
+        TestStepToAdd.Order = globalState.ActiveDefinition.Steps.Count + 1;
         
         globalState.AddTestStep(TestStepToAdd);
 

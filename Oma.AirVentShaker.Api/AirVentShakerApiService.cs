@@ -1,7 +1,4 @@
 ﻿using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Oma.AirVentShaker.Api.Audio;
 using Oma.AirVentShaker.Api.Components;
 using Oma.AirVentShaker.Api.Interfaces;
@@ -40,7 +37,8 @@ public class AirVentShakerApiService(
       .AddInteractiveServerComponents()
       .AddCircuitOptions(options => { options.DetailedErrors = true; });
     
-    services.AddBlazorBootstrap();
+    services
+      .AddBlazorBootstrap();
     
     base
       .ConfigureServices(services)

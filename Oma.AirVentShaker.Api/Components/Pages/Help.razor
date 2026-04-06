@@ -1,47 +1,60 @@
 ﻿@page "/help"
+@using Microsoft.Extensions.Options
+@using Oma.AirVentShaker.Api.Model.Settings
 @rendermode InteractiveServer
+
+@inject IOptions<InfluxSettings> influxOptions
+@inject IJSRuntime JSRuntime
+
 <PageTitle>Help</PageTitle>
 
-<h1>Help</h1>
-
-<EditForm Model="Model" OnValidSubmit="SubmitAsync" FormName="Simulation">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<Markdown>
+    ## SSH Connection
     
-    <button type="submit">Submit</button>
-</EditForm>
-
-<button @onclick="Reset">Reset</button>
+    You can log in to the Raspberry PI with any terminal that supports SSH.
+    
+    >> The password at the time of writing is `admin`.
+    
+    ```sh
+    ssh admin@shaker.local
+    ```
+    
+    >> Note: The raspberry PI hosts its own DNS server, resolving `shaker.local` to the gateway IP adress of the wifi hotspot/access point.
+    >> If the raspberry PI is access via the lan port, then the IP adress is assigned by the respective router and **not** `192.168.1.1`.
+    
+    ### Deployment
+    
+    In the admins home folder is a script called `deploy.sh`. It will pull the latest source code from the github 
+    repository, build and publish the application and restart the systemd service.
+    
+    If the source code is moved - **be aware of the [AGPL license](https://github.com/ACaaD/acaad.ctrl.svc?tab=AGPL-3.0-1-ov-file) 
+    of the downstream dependency [ACaaD](https://github.com/ACaaD) (!)** - this is the place that must be adjusted.
+    
+    ### File Locations
+    
+    The following list shows important file locations on the Raspberry PI. Basic understanding of Linux is assumed.
+    
+    | File | Location | Description |
+    |--|--|--|
+    | SystemD Service | `/etc/systemd/system/shaker.service` | The `systemd` unit file. Enabled to auto start the app. |
+    | App Secrets | `/etc/shaker/secrets` | App configuration, Influx credentials |
+    | OtelCol Config | `/etc/otelcol/config.yaml` | OpenTelemetry Collector configuration file. |
+    
+    ### InfluxDB Credentials
+    
+    The app writes measured GForces (and baseline data/metadata) to an `InfluxDB` instance hosted on the Raspberry PI.
+    
+    The Influx UI can visualize this data. The following credentials are used at the time of writing:
+    
+    **Username:** `admin`
+    **Password:** `adminadmin`
+    **Token:** `@influxOptions.Value.Token`
+</Markdown>
 
 @code {
-    public TestModel Model { get; set; } = null!;
-    
-    public async Task SubmitAsync()
+    protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Model?.Temperature is not null)
-        {
-            // TempSensor.Simulate(Model.Temperature.Value);
-        }
-    
-        if (Model?.PwmPercentage is not null)
-        {
-            // await PwmController.OverrideDutyCycleAsync(Model.PwmPercentage.Value);
-        }
-    }
-    
-    public async Task Reset()
-    {
-        // TempSensor.Reset();
-        // await PwmController.ResetAsync();
-    }
-    
-    protected override void OnInitialized() =>
-        Model ??= new() { };
-    
-    public class TestModel
-    {
-        public int? PwmPercentage { get; set; }
-        
-        public decimal? Temperature { get; set; }
+        if (firstRender)
+            await JSRuntime.InvokeVoidAsync("Prism.highlightAll");
     }
 }

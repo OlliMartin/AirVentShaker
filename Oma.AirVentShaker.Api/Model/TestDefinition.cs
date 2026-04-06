@@ -34,6 +34,23 @@ public class TestDefinition
           TargetGravitationalForce = 0.5f,
           Order = 2,
         }
+      )
+      .AddTestStep(
+        new()
+        {
+          Frequency = 40,
+          Duration = TimeSpan.FromSeconds(30),
+          TargetGravitationalForce = 0.4f,
+          Order = 3,
+        }
+      ).AddTestStep(
+        new()
+        {
+          Frequency = 30,
+          Duration = TimeSpan.FromSeconds(45),
+          TargetGravitationalForce = 0.25f,
+          Order = 4,
+        }
       );
   }
 
