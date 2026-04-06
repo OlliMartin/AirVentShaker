@@ -30,13 +30,30 @@
       <None Include="wwwroot\lib\.gitkeep" />
     </ItemGroup>
 
-    <Target Name="DownloadAssets" BeforeTargets="Build">
-        <Exec Command="pwsh -File build/download-assets.ps1"
-              Condition="'$(OS)' != 'Windows_NT'"
-              StandardOutputImportance="Low" />
-        <Exec Command="powershell -File build/download-assets.ps1"
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap-icons\bootstrap-icons.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap-icons\bootstrap-icons.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\chartjs-plugin-datalabels\chartjs-plugin-datalabels.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\sortablejs\Sortable.min.js" />
+    </ItemGroup>
+
+    <Target Name="DownloadAssets" BeforeTargets="Build" Condition="'$(DownloadAssets)' != 'false'">
+        <Message Importance="high" Text="DownloadAssets: OS = '$(OS)', ProjectDir = '$(ProjectDir)'" />
+
+        <!-- Windows: use PowerShell -->
+        <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)build\download-assets.ps1&quot;"
               Condition="'$(OS)' == 'Windows_NT'"
-              StandardOutputImportance="Low" />
+              StandardOutputImportance="high"
+              StandardErrorImportance="high"
+              LogStandardErrorAsError="true" />
+
+        <!-- Linux/macOS: use bash script -->
+        <Exec Command="bash -c 'cd &quot;$(ProjectDir)&quot; &amp;&amp; build/download-assets.sh'"
+              Condition="'$(OS)' != 'Windows_NT'"
+              StandardOutputImportance="high"
+              StandardErrorImportance="high"
+              LogStandardErrorAsError="true" />
     </Target>
     
 </Project>
