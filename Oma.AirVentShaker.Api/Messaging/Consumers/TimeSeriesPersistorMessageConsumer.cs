@@ -3,12 +3,15 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.Extensions.Logging;
+using Oma.AirVentShaker.Api.Model;
 using Oma.AirVentShaker.Api.Model.Events;
 using Oma.WndwCtrl.Abstractions.Messaging.Interfaces;
 
 namespace Oma.AirVentShaker.Api.Messaging.Consumers;
 
-public sealed class TimeSeriesPersistorMessageConsumer(ILogger<TimeSeriesPersistorMessageConsumer> logger)
+public sealed class TimeSeriesPersistorMessageConsumer(
+  ILogger<TimeSeriesPersistorMessageConsumer> logger,
+  GlobalState globalState)
   : IMessageConsumer<GForceValueBatchEvent>, IDisposable
 {
   private readonly InfluxDBClient _influx = new(
@@ -36,6 +39,11 @@ public sealed class TimeSeriesPersistorMessageConsumer(ILogger<TimeSeriesPersist
 
   public async Task OnMessageAsync(GForceValueBatchEvent message, CancellationToken cancelToken = default)
   {
+    if(globalState.Stage is not TestStage.Calibrate and TestStage.Run)
+    {
+      return;
+    }
+    
     IEnumerable<string> stepNames = message.DataPoints
       .DistinctBy(dp => dp.TestStep?.ToString() ?? "none")
       .Select(dp => dp.TestStep?.ToString() ?? "none");
