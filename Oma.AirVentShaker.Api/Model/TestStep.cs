@@ -41,7 +41,7 @@ public class TestStep
   public string MesauredGForceUi
   {
     get => MeasuredGravitationalForce is not null
-      ? MeasuredGravitationalForce.Value.ToString("F2")
+      ? MeasuredGravitationalForce.Value.ToString("F4")
       : "?";
   }
 
@@ -60,7 +60,7 @@ public class TestStep
   public string AmplitudeUi
   {
     get => IsCalibrated
-      ? Amplitude.ToString("F2")
+      ? Amplitude.ToString("F5")
       : "?";
   }
 
