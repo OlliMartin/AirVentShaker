@@ -13,17 +13,24 @@ public class CalibratingTestRunner(
   
   public async Task<TestStep> ExecuteStepAsync(TestDefinition testDefinition, TestStep testStep, CancellationToken cancelToken)
   {
+    bool isCalibrating = globalState.Stage == TestStage.Calibrate;
+
+    TimeSpan duration = isCalibrating
+      ? globalState.CalibrationDuration
+      : testStep.Duration;
+    
     await audioService.PlayAsync(
       new SineWaveDescriptor()
       {
         Frequency = testStep.Frequency,
         Amplitude = testStep.Amplitude,
       },
-      testStep.Duration + TimeSpan.FromMilliseconds(milliseconds: 500),
+      duration + TimeSpan.FromMilliseconds(milliseconds: 500),
       cancelToken
     );
 
-    await Task.Delay(testStep.Duration, cancelToken);
+    await Task.Delay(duration, cancelToken);
+    
     testStep.Amplitude = audioService.LastAmplitude;
 
     return testStep;

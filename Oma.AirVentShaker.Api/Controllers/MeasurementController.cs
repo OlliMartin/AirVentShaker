@@ -10,5 +10,5 @@ public class MeasurementController(ITestRunner testRunner) : ControllerBase
 {
   [HttpPost("execute")]
   public async Task<ActionResult<TestSummary>> ExecuteTestAsync([FromBody] TestDefinition testDefinition) =>
-    Ok(await testRunner.ExecuteAsync(testDefinition, HttpContext.RequestAborted));
+    Ok(await testRunner.CalibrateAsync(testDefinition, HttpContext.RequestAborted));
 }

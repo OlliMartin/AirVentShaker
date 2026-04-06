@@ -56,7 +56,7 @@
     </div>
 
     <div class="row">
-        <EditForm class="col-md-4" Model="TestStepToAdd" OnValidSubmit="OnAddTestStep" FormName="AddTestStep">
+        <EditForm class="col-md-6" Model="TestStepToAdd" OnValidSubmit="OnAddTestStep" FormName="AddTestStep">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
 
@@ -73,7 +73,7 @@
                 <label class="col-md-4 col-form-label">Duration (in S):</label>
                 <div class="col-md-8">
                     <InputNumber class="form-control" @bind-Value="@TestStepToAdd.DurationInSeconds"
-                                 min="1" max="300"/>
+                                 min="1" max="600"/>
                 </div>
             </div>
 
@@ -92,12 +92,12 @@
             </div>
         </EditForm>
 
-        <div class="col-md-6" />
+        <div class="col-md-3" />
         
-        <div class="col-md-2">
+        <div class="col-md-3">
             <p>
-                <Button @onclick="Calibrate" Color="ButtonColor.Primary">Calibrate</Button>
-                <Button Color="ButtonColor.Primary" Disabled="@globalState.CannotRunTest">Run!</Button>
+                <Button @onclick="Calibrate" Color="ButtonColor.Primary" Disabled="@CalibrateButtonDisabled">Calibrate</Button>
+                <Button @onclick="Run" Color="ButtonColor.Primary" Disabled="@globalState.CannotRunTest">Run!</Button>
             </p>
         </div>
     </div>
@@ -111,6 +111,9 @@
         TargetGravitationalForce = 0.5f
     };
     Grid<TestStep> grid = default!;
+    
+    private bool CalibrateButtonDisabled => globalState.ActiveDefinition.Steps.Count == 0 
+                                            || globalState.Stage is not (TestStage.Idle or TestStage.Calibrated);
 
     protected override void OnInitialized()
     {
@@ -152,6 +155,11 @@
 
     public async Task Calibrate()
     {
-        await testRunner.ExecuteAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None);
+        await testRunner.CalibrateAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None);
+    }
+    
+    public async Task Run()
+    {
+        await testRunner.RunAsync(globalState.ActiveDefinition, cancelToken: CancellationToken.None);
     }
 }

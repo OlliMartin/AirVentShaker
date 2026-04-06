@@ -39,6 +39,14 @@ public class GlobalState
 
   public TestDefinition ActiveDefinition { get; set; }
 
+  public TimeSpan CalibrationDuration { get; set; } = TimeSpan.FromSeconds(15);
+  
+  public int CalibrationDurationInSeconds
+  {
+    get => (int)CalibrationDuration.TotalSeconds;
+    set => CalibrationDuration = TimeSpan.FromSeconds(value);
+  }
+
   public GlobalState AddTestStep(TestStep testStep)
   {
     UpdateTestSteps(

@@ -8,12 +8,24 @@ public interface ITestRunner
 
   GlobalState GlobalState { get; }
   
-  async Task<TestSummary> ExecuteAsync(TestDefinition testDefinition, CancellationToken cancelToken)
+  Task<TestSummary> CalibrateAsync(TestDefinition testDefinition, CancellationToken cancelToken)
   {
-    Guid testId = Guid.NewGuid();
     GlobalState.ActiveDefinition = testDefinition;
     GlobalState.Stage = TestStage.Calibrate;
-
+    return RunInternalAsync(testDefinition, cancelToken); 
+  }
+  
+  Task<TestSummary> RunAsync(TestDefinition testDefinition, CancellationToken cancelToken)
+  {
+    GlobalState.ActiveDefinition = testDefinition;
+    GlobalState.Stage = TestStage.Run;
+    return RunInternalAsync(testDefinition, cancelToken); 
+  }
+  
+  async Task<TestSummary> RunInternalAsync(TestDefinition testDefinition, CancellationToken cancelToken)
+  {
+    Guid testId = Guid.NewGuid();
+    
     Logger.LogInformation("Starting test {TestName} with id {TestId}", testDefinition.Name, testId);
 
     foreach (TestStep testStep in testDefinition.Steps.Where(s => s.Active))
