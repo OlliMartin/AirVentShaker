@@ -17,15 +17,18 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
   private readonly long _maxAmplitudeDelta;
   private readonly long _minAmplitudeDelta;
   private readonly IOptions<SensorSettings> _sensorOptions;
+  private readonly IMessageBusWriter _messageBusWriter;
 
   public AmplitudeAdjustingMessageConsumer(
     IOptions<SensorSettings> sensorOptions,
+    IMessageBusWriter messageBusWriter,
     GlobalState globalState,
     ILogger<AmplitudeAdjustingMessageConsumer> logger,
     IAudioService audioService
   )
   {
     _sensorOptions = sensorOptions;
+    _messageBusWriter = messageBusWriter;
     _globalState = globalState;
     _logger = logger;
     _audioService = audioService;
@@ -92,6 +95,7 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
       measurements.Count
     );
 
+    await _messageBusWriter.SendAsync(new GForceAggregatedMeasurementEvent(step.Amplitude), cancelToken);
     await _audioService.UpdateAmplitudeAsync(step.Amplitude, cancelToken);
   }
 

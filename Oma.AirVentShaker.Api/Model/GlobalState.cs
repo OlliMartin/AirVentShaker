@@ -10,6 +10,7 @@ public enum TestStage
 
 public class GlobalState
 {
+  private TestStage _stage = TestStage.Idle;
   public bool CanRunTest => Stage == TestStage.Calibrated;
 
   public bool CannotRunTest => CanRunTest is false;
@@ -21,8 +22,16 @@ public class GlobalState
   }
   
   public event EventHandler OnChange;
-  
-  public TestStage Stage { get; set; } = TestStage.Idle;
+
+  public TestStage Stage
+  {
+    get => _stage;
+    set
+    {
+      _stage = value;
+      OnChange?.Invoke(this, EventArgs.Empty);
+    }
+  }
 
   public string StageUi => Stage.ToString();
 

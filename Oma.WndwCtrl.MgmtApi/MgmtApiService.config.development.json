@@ -1,7 +1,4 @@
 {
-  "Audio": {
-    "PlaybackDevice": "Speakers (Universal Audio Twin USB)"
-  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",

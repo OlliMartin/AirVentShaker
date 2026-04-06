@@ -2,6 +2,8 @@ namespace Oma.AirVentShaker.Api.Model;
 
 public class TestStep
 {
+  private float _amplitude = 0.25f;
+  private float? _measuredGravitationalForce;
   public bool Active { get; set; } = true;
 
   public int Order { get; set; } = int.MaxValue;
@@ -26,14 +28,39 @@ public class TestStep
 
   public float TargetGravitationalForce { get; set; }
 
-  public float Amplitude { get; set; } = 0.5f;
+  public float? MeasuredGravitationalForce
+  {
+    get => _measuredGravitationalForce;
+    set
+    {
+      _measuredGravitationalForce = value;
+      TestDefinition?.RaiseChange();
+    }
+  }
   
+  public string MesauredGForceUi
+  {
+    get => MeasuredGravitationalForce is not null
+      ? MeasuredGravitationalForce.Value.ToString("F2")
+      : "?";
+  }
+
+  public float Amplitude
+  {
+    get => _amplitude;
+    set
+    {
+      TestDefinition?.RaiseChange();
+      _amplitude = value;
+    }
+  }
+
   public bool IsCalibrated { get; set; }
 
   public string AmplitudeUi
   {
     get => IsCalibrated
-      ? Amplitude.ToString("d2")
+      ? Amplitude.ToString("F2")
       : "?";
   }
 
