@@ -79,6 +79,7 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
     AmplitudeCalculation calc = _sensorOptions.Value.AmplitudeCalculation;
 
     IEnumerable<float> deviations = measurements.Select(m => target - m);
+    float measureAverage = measurements.Average();
     float devAverage = deviations.Average();
 
     float scaled = devAverage * calc.DampeningFactor;
@@ -95,7 +96,7 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
       measurements.Count
     );
 
-    await _messageBusWriter.SendAsync(new GForceAggregatedMeasurementEvent(step.Amplitude), cancelToken);
+    await _messageBusWriter.SendAsync(new GForceAggregatedMeasurementEvent(measureAverage), cancelToken);
     await _audioService.UpdateAmplitudeAsync(step.Amplitude, cancelToken);
   }
 
