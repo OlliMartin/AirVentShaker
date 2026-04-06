@@ -77,3 +77,11 @@ h1:focus {
 .home-container > .row {
     padding-bottom: 20px;
 }
+
+.blockquote {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+
+    background: #2d2d2d;
+    padding: 0.8rem;
+}

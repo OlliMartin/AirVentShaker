@@ -11,16 +11,15 @@
 <Markdown>
     ## SSH Connection
     
-    You can log in to the Raspberry PI with any terminal that supports SSH.
-    
-    >> The password at the time of writing is `admin`.
+    You can log in to the Raspberry PI with any terminal that supports SSH. The password at the time of writing is `admin`.
     
     ```sh
     ssh admin@shaker.local
     ```
     
-    >> Note: The raspberry PI hosts its own DNS server, resolving `shaker.local` to the gateway IP adress of the wifi hotspot/access point.
-    >> If the raspberry PI is access via the lan port, then the IP adress is assigned by the respective router and **not** `192.168.1.1`.
+    You will be prompted for a password which is _not_ visible when you type it. The password is mentioned above.
+    
+    >> **Note:** The raspberry PI hosts its own DNS server, resolving `shaker.local` to the gateway IP adress of the wifi hotspot/access point. If the raspberry PI is access via the lan port, then the IP adress is assigned by the respective router and **not** `192.168.1.1`.
     
     ## Deployment
     
@@ -33,8 +32,7 @@
     
     ```sh
     ssh admin@shaker.local
-    # Use password 'admin' if unchanged.
-    cd ~
+    cd ~ # Test
     ./deploy.sh
     ```
     
@@ -42,7 +40,7 @@
     
     ## File Locations
     
-    The following list shows important file locations on the Raspberry PI. Basic understanding of Linux is assumed.
+    The following list shows important file locations on the Raspberry PI.
     
     | File | Location | Description |
     |--|--|--|
@@ -50,6 +48,8 @@
     | App Secrets | `/etc/shaker/secrets` | App configuration, Influx credentials |
     | OtelCol Config | `/etc/otelcol/config.yaml` | OpenTelemetry Collector configuration file. |
     
+    This is not rendered for some reason.
+    Basic understanding of Linux is assumed.
     
     ## InfluxDB Credentials
     
