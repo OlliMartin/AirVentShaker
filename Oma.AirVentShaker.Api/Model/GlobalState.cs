@@ -39,7 +39,7 @@ public class GlobalState
 
   public TestDefinition ActiveDefinition { get; set; }
 
-  public TimeSpan CalibrationDuration { get; set; } = TimeSpan.FromSeconds(15);
+  public TimeSpan CalibrationDuration { get; set; } = TimeSpan.FromSeconds(30);
   
   public int CalibrationDurationInSeconds
   {
