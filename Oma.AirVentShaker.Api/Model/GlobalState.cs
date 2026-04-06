@@ -62,8 +62,16 @@ public class GlobalState
   
   public GlobalState RemoveTestStep(TestStep testStep)
   {
-    UpdateTestSteps(
-      ActiveSteps.Where(ts => ts.Equals(testStep) is false));
+    List<TestStep> nextSteps = ActiveSteps
+      .Where(ts => ts.Equals(testStep) is false)
+      .ToList();
+
+    for (int i = 0; i < nextSteps.Count; i++)
+    {
+      nextSteps[i].Order = i + 1;
+    }
+    
+    UpdateTestSteps(nextSteps);
 
     ActiveDefinition.RaiseChange();
     OnChange?.Invoke(this, EventArgs.Empty);
