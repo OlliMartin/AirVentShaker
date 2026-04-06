@@ -30,7 +30,7 @@
       <None Include="wwwroot\lib\.gitkeep" />
     </ItemGroup>
 
-    <Target Name="DownloadAssets" BeforeTargets="ComputeFilesToPublish">
+    <Target Name="DownloadAssets" BeforeTargets="Build">
         <Exec Command="pwsh -File build/download-assets.ps1"
               Condition="'$(OS)' != 'Windows_NT'"
               StandardOutputImportance="Low" />
