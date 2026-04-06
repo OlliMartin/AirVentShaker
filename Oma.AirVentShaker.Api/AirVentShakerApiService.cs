@@ -46,6 +46,7 @@ public class AirVentShakerApiService(
       .ConfigureServices(services)
       .Configure<SensorSettings>(Configuration.GetSection(SensorSettings.SectionName))
       .Configure<AudioSettings>(Configuration.GetSection(AudioSettings.SectionName))
+      .Configure<InfluxSettings>(Configuration.GetSection(InfluxSettings.SectionName))
       .AddSingleton<GlobalState>()
       .AddSingleton(_messageBusAccessor)
       .UseMessageBus(_messageBusAccessor)
