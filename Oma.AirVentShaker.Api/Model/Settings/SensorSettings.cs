@@ -8,6 +8,8 @@ public class AmplitudeCalculation
   public float MaxDelta { get; init; } = 0.1f;
   
   public float MinAmplitude { get; init; } = 0.001f;
+  
+  public float DiscardPercent { get; init; } = 0.05f; 
 }
 
 public class AccelerometerConfiguration

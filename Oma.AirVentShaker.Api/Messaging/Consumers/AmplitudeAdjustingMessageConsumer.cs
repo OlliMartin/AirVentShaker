@@ -78,24 +78,36 @@ public class AmplitudeAdjustingMessageConsumer : IMessageConsumer<GForceValueBat
   {
     AmplitudeCalculation calc = _sensorOptions.Value.AmplitudeCalculation;
 
-    IEnumerable<float> deviations = measurements.Select(m => target - m);
-    float measureAverage = measurements.Average();
+    var sortedMeasurements = measurements
+      .OrderBy(v => v)
+      .ToList();
+
+    int count = sortedMeasurements.Count;
+    int trimCount = (int)(count * calc.DiscardPercent);
+    
+    var filteredMeasurements = sortedMeasurements
+      .Skip(trimCount)
+      .Take(count - 2 * trimCount)
+      .ToList();
+    
+    IEnumerable<float> deviations = filteredMeasurements.Select(m => target - m);
+    float measureAverage = filteredMeasurements.Average();
     float devAverage = deviations.Average();
 
     float scaled = devAverage * calc.DampeningFactor;
     float clamped = Math.Clamp(scaled, calc.MinDelta, calc.MaxDelta);
     
     step.Amplitude += clamped;
-    
     step.Amplitude = Math.Clamp(step.Amplitude, calc.MinAmplitude, 1);
 
     _logger.LogInformation(
-      "Measured G-Forces: {avgG}. Updating amplitude to {Amplitude} (diff={Diff}) based on an average of {Avg} over {Cnt} values.",
-      measurements.Average(),
+      "Measured G-Forces: {avgG}. Updating amplitude to {Amplitude} (diff={Diff}) based on an average of {Avg} over {Cnt} values. Discarded Count: {DiscardCount}.",
+      filteredMeasurements.Average(),
       step.Amplitude,
       clamped,
       devAverage,
-      measurements.Count
+      count,
+      measurements.Count - count
     );
 
     await _messageBusWriter.SendAsync(new GForceAggregatedMeasurementEvent(measureAverage), cancelToken);
