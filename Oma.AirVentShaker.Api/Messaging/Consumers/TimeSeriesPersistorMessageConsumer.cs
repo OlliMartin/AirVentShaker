@@ -3,21 +3,36 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Oma.AirVentShaker.Api.Model;
 using Oma.AirVentShaker.Api.Model.Events;
+using Oma.AirVentShaker.Api.Model.Settings;
 using Oma.WndwCtrl.Abstractions.Messaging.Interfaces;
 
 namespace Oma.AirVentShaker.Api.Messaging.Consumers;
 
-public sealed class TimeSeriesPersistorMessageConsumer(
-  ILogger<TimeSeriesPersistorMessageConsumer> logger,
-  GlobalState globalState)
-  : IMessageConsumer<GForceValueBatchEvent>, IDisposable
+public sealed class TimeSeriesPersistorMessageConsumer : IMessageConsumer<GForceValueBatchEvent>, IDisposable
 {
-  private readonly InfluxDBClient _influx = new(
-    "http://influx.mon.acaad.dev:8086",
-    "aSJGpOeErhhn4Mwb8gYfoP-haRn3vd_Ef2mzvs-5qipYnX1tTrv50UwXcx9B2tJsjKq9jN9tU62gEy-VyNxewQ=="
-  );
+  private readonly InfluxDBClient _influx;
+
+  private readonly ILogger<TimeSeriesPersistorMessageConsumer> _logger;
+  private readonly GlobalState _globalState;
+
+  public TimeSeriesPersistorMessageConsumer(
+    ILogger<TimeSeriesPersistorMessageConsumer> logger,
+    IOptions<InfluxSettings> influxOptions,
+    GlobalState globalState)
+  {
+    _logger = logger;
+    _globalState = globalState;
+
+    InfluxSettings influxSettings = influxOptions.Value;
+    
+    _influx = new(
+      influxSettings.Url,
+      influxSettings.Token
+    );
+  }
 
   public void Dispose()
   {
@@ -28,7 +43,7 @@ public sealed class TimeSeriesPersistorMessageConsumer(
 
   public Task OnExceptionAsync(IMessage message, Exception exception, CancellationToken cancelToken = default)
   {
-    logger.LogError(
+    _logger.LogError(
       exception,
       "An unexpected error occurred processing event {type}.",
       message.GetType().Name
@@ -39,7 +54,7 @@ public sealed class TimeSeriesPersistorMessageConsumer(
 
   public async Task OnMessageAsync(GForceValueBatchEvent message, CancellationToken cancelToken = default)
   {
-    if(globalState.Stage is not TestStage.Calibrate and not TestStage.Run)
+    if(_globalState.Stage is not TestStage.Calibrate and not TestStage.Run)
     {
       return;
     }
@@ -48,7 +63,7 @@ public sealed class TimeSeriesPersistorMessageConsumer(
       .DistinctBy(dp => dp.TestStep?.ToString() ?? "none")
       .Select(dp => dp.TestStep?.ToString() ?? "none");
 
-    logger.LogDebug(
+    _logger.LogDebug(
       "Received {count} events. Average value: {avg} Test Steps: [{stepNames}]",
       message.DataPoints.Count,
       message.DataPoints.Average(dp => dp.NetForce),
