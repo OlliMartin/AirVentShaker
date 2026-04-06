@@ -2,7 +2,7 @@ namespace Oma.AirVentShaker.Api.Model;
 
 public class TestStep
 {
-  private float _amplitude = 0.25f;
+  private float _amplitude = 0.05f;
   private float? _measuredGravitationalForce;
   public bool Active { get; set; } = true;
 
