@@ -45,7 +45,7 @@ public sealed class Adxl345SensorService : ISensorService, IDisposable
     };
 
     _device = SpiDevice.Create(settings);
-    _sensor = new Adxl345(_device, GravityRange.Range02);
+    _sensor = new Adxl345(_device, GravityRange.Range04);
 
     _ = CalibrateSensorAsync();
   }
